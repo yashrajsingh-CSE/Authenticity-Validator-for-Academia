@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartClass AI — Intelligent Classroom & Timetable Scheduler</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{syne:['Syne','sans-serif'],dm:['DM Sans','sans-serif']},colors:{brand:{50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',900:'#312e81'},surface:{800:'#0f1117',900:'#080b10'}}}}}
+</script>
+<style>
+:root{--brand:#6366f1;--brand2:#818cf8;--accent:#06b6d4;--accent2:#a855f7;--bg:#080b10;--surface:#0f1117;--card:#141822;--border:#1e2433;--text:#e2e8f0;--muted:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+h1,h2,h3,h4,h5,h6,.font-display{font-family:'Syne',sans-serif}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1e2433;border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:#2d3748}
+
+/* Glass */
+.glass{background:rgba(20,24,34,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06)}
+.glass-light{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08)}
+
+/* Gradient text */
+.grad-text{background:linear-gradient(135deg,#818cf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad-text2{background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad-text3{background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Glow effects */
+.glow-brand{box-shadow:0 0 20px rgba(99,102,241,0.3)}
+.glow-cyan{box-shadow:0 0 20px rgba(6,182,212,0.3)}
+.glow-purple{box-shadow:0 0 20px rgba(168,85,247,0.3)}
+.glow-emerald{box-shadow:0 0 20px rgba(16,185,129,0.3)}
+
+/* Gradient borders */
+.grad-border{position:relative;border:0!important}
+.grad-border::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(99,102,241,0.5),rgba(6,182,212,0.3),rgba(168,85,247,0.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;transition:all .3s ease}
+.card:hover{border-color:rgba(99,102,241,0.3);box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 0 1px rgba(99,102,241,0.1)}
+.card-hover{transition:transform .2s ease,box-shadow .3s ease}
+.card-hover:hover{transform:translateY(-2px);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.4);opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes spin-slow{to{transform:rotate(360deg)}}
+@keyframes bounce-in{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+@keyframes typing{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes particle{0%{transform:translate(0,0) scale(1);opacity:0.8}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+@keyframes counter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes neon-pulse{0%,100%{text-shadow:0 0 5px rgba(99,102,241,0.5)}50%{text-shadow:0 0 20px rgba(99,102,241,0.9),0 0 40px rgba(99,102,241,0.4)}}
+@keyframes ai-thinking{0%{width:0%}100%{width:100%}}
+@keyframes progress-bar{from{width:0}to{width:var(--w)}}
+@keyframes toast-in{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+@keyframes toast-out{from{transform:none;opacity:1}to{transform:translateX(120%);opacity:0}}
+@keyframes modal-in{from{transform:scale(0.92) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.animate-fade{animation:fadeIn .4s ease forwards}
+.animate-slide{animation:slideIn .4s ease forwards}
+.animate-float{animation:float 4s ease-in-out infinite}
+.animate-spin-slow{animation:spin-slow 8s linear infinite}
+.animate-bounce-in{animation:bounce-in .5s cubic-bezier(0.34,1.56,0.64,1) forwards}
+
+/* Skeleton */
+.skeleton{background:linear-gradient(90deg,#1a1f2e 25%,#1e2433 50%,#1a1f2e 75%);background-size:200% 100%;animation:skeleton 1.5s infinite}
+
+/* Sidebar */
+#sidebar{width:260px;transition:all .35s cubic-bezier(0.4,0,0.2,1)}
+#sidebar.collapsed{width:72px}
+#sidebar.collapsed .nav-label,.collapsed .section-label,.collapsed .sidebar-header-text{display:none}
+#sidebar.collapsed .nav-item{justify-content:center}
+#sidebar.collapsed .nav-item span{display:none}
+
+/* Toast */
+#toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--card);border:1px solid var(--border);min-width:280px;max-width:380px;animation:toast-in .35s ease forwards;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.toast.removing{animation:toast-out .3s ease forwards}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s ease}
+.modal-overlay.active{opacity:1}
+.modal-box{animation:modal-in .35s cubic-bezier(0.34,1.56,0.64,1) forwards}
+
+/* Auth */
+#auth-screen{position:fixed;inset:0;z-index:500;background:var(--bg)}
+.auth-particle{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(99,102,241,0.6);animation:particle 4s ease-out infinite}
+
+/* Timetable */
+.tt-cell{min-height:80px;border:1px solid var(--border);position:relative;transition:all .2s ease}
+.tt-cell:hover{background:rgba(99,102,241,0.05)}
+.tt-block{border-radius:8px;padding:6px 8px;cursor:pointer;transition:all .2s ease;user-select:none;font-size:11px}
+.tt-block:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+
+/* Progress rings */
+.progress-ring{transition:stroke-dashoffset .8s cubic-bezier(0.4,0,0.2,1)}
+
+/* Stat cards */
+.stat-card{position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(99,102,241,0.04) 100%);pointer-events:none}
+
+/* AI pulse */
+.ai-pulse{position:relative}
+.ai-pulse::before{content:'';position:absolute;inset:-4px;border-radius:inherit;border:2px solid rgba(99,102,241,0.4);animation:pulse-ring 2s ease-out infinite}
+
+/* Nav item */
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;cursor:pointer;transition:all .2s ease;color:#64748b;font-size:14px;font-weight:500}
+.nav-item:hover{background:rgba(99,102,241,0.08);color:#e2e8f0}
+.nav-item.active{background:rgba(99,102,241,0.15);color:#818cf8;border-left:3px solid #6366f1}
+.nav-item .icon{width:20px;text-align:center;flex-shrink:0}
+
+/* Ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.15);width:0;height:0;top:50%;left:50%;transform:translate(-50%,-50%);transition:width .4s ease,height .4s ease,opacity .4s ease;opacity:0}
+.ripple:active::after{width:200px;height:200px;opacity:0}
+
+/* Command palette */
+#cmd-palette{position:fixed;top:20%;left:50%;transform:translateX(-50%);width:min(600px,90vw);z-index:2000;display:none}
+#cmd-palette.active{display:block;animation:bounce-in .25s ease}
+
+/* Heatmap cell */
+.heatmap-cell{border-radius:4px;transition:all .2s ease;cursor:pointer}
+.heatmap-cell:hover{transform:scale(1.15);z-index:10}
+
+/* Section pages */
+.page{display:none;animation:fadeIn .4s ease}
+.page.active{display:block}
+
+/* Chart container */
+.chart-wrap{position:relative;height:240px}
+
+/* Bottom nav (mobile) */
+#bottom-nav{display:none}
+@media(max-width:768px){
+  #sidebar{position:fixed;left:-280px;top:0;bottom:0;z-index:200;transition:left .3s ease}
+  #sidebar.open{left:0}
+  #bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--card);border-top:1px solid var(--border);padding:8px 0}
+  #main-content{margin-left:0!important;padding-bottom:80px}
+  #sidebar-toggle-btn{display:flex}
+}
+
+/* Gradient bg for auth */
+.auth-bg{background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(168,85,247,0.1) 0%,transparent 50%),radial-gradient(ellipse at 60% 80%,rgba(6,182,212,0.08) 0%,transparent 50%),var(--bg)}
+
+/* Input styles */
+.inp{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;width:100%;transition:all .2s ease;font-family:'DM Sans',sans-serif}
+.inp:focus{outline:none;border-color:rgba(99,102,241,0.5);background:rgba(99,102,241,0.05);box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.inp::placeholder{color:#475569}
+
+/* Button styles */
+.btn-primary{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;padding:11px 24px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .25s ease;display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{background:linear-gradient(135deg,#818cf8,#6366f1);box-shadow:0 8px 24px rgba(99,102,241,0.4);transform:translateY(-1px)}
+.btn-primary:active{transform:none}
+.btn-secondary{background:rgba(255,255,255,0.06);color:var(--text);padding:11px 24px;border-radius:10px;font-weight:500;font-size:14px;cursor:pointer;border:1px solid var(--border);transition:all .25s ease;display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:rgba(99,102,241,0.3)}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.badge-brand{background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.2)}
+.badge-emerald{background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
+.badge-amber{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)}
+.badge-rose{background:rgba(244,63,94,0.12);color:#fb7185;border:1px solid rgba(244,63,94,0.2)}
+.badge-cyan{background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.2)}
+.badge-purple{background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.2)}
+
+/* Toggle switch */
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#1e2433;border-radius:99px;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#64748b;border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:rgba(99,102,241,0.3)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);background:#6366f1}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#475569;border-bottom:1px solid var(--border)}
+.data-table td{padding:14px 16px;font-size:13px;border-bottom:1px solid rgba(30,36,51,0.5)}
+.data-table tr:hover td{background:rgba(99,102,241,0.03)}
+.data-table tr:last-child td{border-bottom:none}
+
+/* Page section */
+.section-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+.section-sub{font-size:13px;color:#64748b}
+
+/* AI chat */
+.ai-msg{animation:fadeIn .3s ease}
+.ai-cursor{display:inline-block;width:8px;height:14px;background:#6366f1;animation:typing .8s infinite}
+</style>
+</head>
+<body class="font-dm">
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Command Palette -->
+<div id="cmd-palette">
+  <div class="glass" style="border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.7)">
+    <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <i class="fa fa-search" style="color:#475569;font-size:14px"></i>
+      <input id="cmd-input" type="text" placeholder="Search pages, faculty, students, rooms..." style="background:transparent;border:none;color:var(--text);font-size:15px;width:100%;outline:none;font-family:'DM Sans',sans-serif" oninput="filterCmd(this.value)"/>
+      <span style="font-size:11px;color:#475569;background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:6px;flex-shrink:0">ESC</span>
+    </div>
+    <div id="cmd-results" style="max-height:340px;overflow-y:auto;padding:8px"></div>
+  </div>
+</div>
+<div id="cmd-backdrop" onclick="closeCmd()" style="position:fixed;inset:0;z-index:1999;display:none"></div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="auth-bg">
+  <div id="auth-particles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+  
+  <div style="display:flex;min-height:100vh;position:relative;z-index:1">
+    <!-- Left panel -->
+    <div class="hidden lg:flex" style="width:45%;flex-direction:column;justify-content:center;padding:60px;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,0.08) 0%,transparent 70%)"></div>
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;border-right:1px solid rgba(255,255,255,0.05)"></div>
+      
+      <div style="position:relative">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:48px">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(99,102,241,0.4)">
+            <i class="fa fa-brain" style="color:#fff;font-size:18px"></i>
+          </div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f1f5f9">SmartClass AI</div>
+            <div style="font-size:11px;color:#64748b">Intelligent Classroom Platform</div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom:32px">
+          <h1 style="font-family:'Syne',sans-serif;font-size:42px;font-weight:800;line-height:1.1;color:#f1f5f9;margin-bottom:16px">
+            The Future of<br/><span class="grad-text">Smart Education</span>
+          </h1>
+          <p style="font-size:15px;color:#94a3b8;line-height:1.7">AI-powered scheduling, real-time classroom management, and intelligent analytics — all in one platform.</p>
+        </div>
+        
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="glass-light" style="border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-wand-magic-sparkles" style="color:#22d3ee;font-size:14px"></i></div>
+            <div><div style="font-size:13px;font-weight:600;color:#e2e8f0">AI Timetable Generation</div><div style="font-size:12px;color:#64748b">Zero conflicts, optimal scheduling</div></div>
+          </div>
+          <div class="glass-light" style="border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-chart-line" style="color:#c084fc;font-size:14px"></i></div>
+            <div><div style="font-size:13px;font-weight:600;color:#e2e8f0">Real-time Analytics</div><div style="font-size:12px;color:#64748b">Data-driven insights for better decisions</div></div>
+          </div>
+          <div class="glass-light" style="border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-shield-halved" style="color:#34d399;font-size:14px"></i></div>
+            <div><div style="font-size:13px;font-weight:600;color:#e2e8f0">Enterprise Security</div><div style="font-size:12px;color:#64748b">Role-based access for every stakeholder</div></div>
+          </div>
+        </div>
+        
+        <div style="margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.06)">
+          <div style="font-size:12px;color:#475569;margin-bottom:12px;font-weight:500;text-transform:uppercase;letter-spacing:.08em">Trusted by</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <span style="font-size:12px;color:#64748b;background:rgba(255,255,255,0.04);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.06)">IIT Bombay</span>
+            <span style="font-size:12px;color:#64748b;background:rgba(255,255,255,0.04);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.06)">VIT Vellore</span>
+            <span style="font-size:12px;color:#64748b;background:rgba(255,255,255,0.04);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.06)">BITS Pilani</span>
+            <span style="font-size:12px;color:#64748b;background:rgba(255,255,255,0.04);padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.06)">NIT Trichy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right panel — Login form -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;overflow-y:auto">
+      <div style="width:100%;max-width:420px">
+        <!-- Mobile logo -->
+        <div class="flex lg:hidden" style="align-items:center;gap:10px;margin-bottom:36px;justify-content:center">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center">
+            <i class="fa fa-brain" style="color:#fff;font-size:16px"></i>
+          </div>
+          <span style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#f1f5f9">SmartClass AI</span>
+        </div>
+        
+        <!-- Auth tabs -->
+        <div id="auth-login-view">
+          <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:#f1f5f9;margin-bottom:6px">Welcome back</h2>
+          <p style="font-size:14px;color:#64748b;margin-bottom:28px">Sign in to your workspace</p>
+          
+          <!-- Demo cards -->
+          <div style="margin-bottom:24px">
+            <div style="font-size:11px;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Quick Demo Access</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button onclick="demoLogin('admin')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;cursor:pointer;transition:all .2s;width:100%;text-align:left" onmouseover="this.style.background='rgba(99,102,241,0.15)'" onmouseout="this.style.background='rgba(99,102,241,0.08)'">
+                <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-user-shield" style="color:#fff;font-size:11px"></i></div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:600;color:#e2e8f0">Admin — Dr. Rajesh Kumar</div><div style="font-size:11px;color:#64748b">admin@smartclass.edu · admin123</div></div>
+                <i class="fa fa-arrow-right" style="color:#6366f1;font-size:11px"></i>
+              </button>
+              <button onclick="demoLogin('faculty')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:10px;cursor:pointer;transition:all .2s;width:100%;text-align:left" onmouseover="this.style.background='rgba(6,182,212,0.15)'" onmouseout="this.style.background='rgba(6,182,212,0.08)'">
+                <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#06b6d4,#0891b2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-chalkboard-user" style="color:#fff;font-size:11px"></i></div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:600;color:#e2e8f0">Faculty — Prof. Anita Sharma</div><div style="font-size:11px;color:#64748b">faculty@smartclass.edu · faculty123</div></div>
+                <i class="fa fa-arrow-right" style="color:#06b6d4;font-size:11px"></i>
+              </button>
+              <button onclick="demoLogin('student')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:10px;cursor:pointer;transition:all .2s;width:100%;text-align:left" onmouseover="this.style.background='rgba(168,85,247,0.15)'" onmouseout="this.style.background='rgba(168,85,247,0.08)'">
+                <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#a855f7,#9333ea);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-graduation-cap" style="color:#fff;font-size:11px"></i></div>
+                <div style="flex:1"><div style="font-size:12px;font-weight:600;color:#e2e8f0">Student — Arjun Mehta</div><div style="font-size:11px;color:#64748b">student@smartclass.edu · student123</div></div>
+                <i class="fa fa-arrow-right" style="color:#a855f7;font-size:11px"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <span style="font-size:12px;color:#475569">or sign in manually</span>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          
+          <form onsubmit="handleLogin(event)">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Email Address</label>
+              <input id="login-email" type="email" class="inp" placeholder="you@smartclass.edu" value="admin@smartclass.edu"/>
+            </div>
+            <div style="margin-bottom:14px;position:relative">
+              <label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Password</label>
+              <input id="login-pass" type="password" class="inp" placeholder="Enter your password" value="admin123" style="padding-right:44px"/>
+              <button type="button" onclick="togglePass('login-pass',this)" style="position:absolute;right:12px;bottom:13px;background:none;border:none;color:#475569;cursor:pointer;font-size:13px"><i class="fa fa-eye"></i></button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="checkbox" checked style="accent-color:#6366f1"/>
+                <span style="font-size:13px;color:#94a3b8">Remember me</span>
+              </label>
+              <button type="button" onclick="showForgot()" style="font-size:13px;color:#818cf8;background:none;border:none;cursor:pointer">Forgot password?</button>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center">
+              <i class="fa fa-right-to-bracket"></i> Sign In to Dashboard
+            </button>
+          </form>
+          
+          <div style="margin-top:20px;text-align:center">
+            <span style="font-size:13px;color:#64748b">Don't have an account? </span>
+            <button onclick="showSignup()" style="font-size:13px;color:#818cf8;background:none;border:none;cursor:pointer;font-weight:600">Create account</button>
+          </div>
+        </div>
+        
+        <!-- Signup view (hidden) -->
+        <div id="auth-signup-view" style="display:none">
+          <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:#f1f5f9;margin-bottom:6px">Create Account</h2>
+          <p style="font-size:14px;color:#64748b;margin-bottom:28px">Join your institution's SmartClass workspace</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">First Name</label><input type="text" class="inp" placeholder="Rahul"/></div>
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Last Name</label><input type="text" class="inp" placeholder="Singh"/></div>
+          </div>
+          <div style="margin-bottom:14px"><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Email</label><input type="email" class="inp" placeholder="rahul@college.edu"/></div>
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Role</label>
+            <select class="inp">
+              <option value="">Select your role</option>
+              <option>Admin</option><option>HOD</option><option>Faculty</option><option>Student</option><option>Facility Staff</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px"><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Department</label><input type="text" class="inp" placeholder="Computer Science & Engineering"/></div>
+          <div style="margin-bottom:20px;position:relative"><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Password</label><input type="password" class="inp" placeholder="Create a strong password" id="signup-pass"/><button type="button" onclick="togglePass('signup-pass',this)" style="position:absolute;right:12px;bottom:13px;background:none;border:none;color:#475569;cursor:pointer;font-size:13px"><i class="fa fa-eye"></i></button></div>
+          <button class="btn-primary" style="width:100%;justify-content:center" onclick="showToast('Account request submitted for approval','info')"><i class="fa fa-user-plus"></i> Create Account</button>
+          <div style="margin-top:16px;text-align:center"><button onclick="showLogin()" style="font-size:13px;color:#818cf8;background:none;border:none;cursor:pointer;font-weight:600">← Back to login</button></div>
+        </div>
+        
+        <!-- Forgot password (hidden) -->
+        <div id="auth-forgot-view" style="display:none">
+          <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:#f1f5f9;margin-bottom:6px">Reset Password</h2>
+          <p style="font-size:14px;color:#64748b;margin-bottom:28px">Enter your email and we'll send you reset instructions.</p>
+          <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:6px">Email Address</label><input type="email" class="inp" placeholder="you@smartclass.edu"/></div>
+          <button class="btn-primary" style="width:100%;justify-content:center" onclick="showToast('Reset link sent to your email','success')"><i class="fa fa-paper-plane"></i> Send Reset Link</button>
+          <div style="margin-top:16px;text-align:center"><button onclick="showLogin()" style="font-size:13px;color:#818cf8;background:none;border:none;cursor:pointer;font-weight:600">← Back to login</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="app" style="display:none;min-height:100vh;display:flex;flex-direction:column">
+  
+  <!-- TOP NAVBAR -->
+  <nav class="glass" style="position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);border-radius:0">
+    <div style="display:flex;align-items:center;gap:12px;padding:0 20px;height:60px">
+      <!-- Sidebar toggle -->
+      <button id="sidebar-toggle-btn" onclick="toggleSidebar()" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94a3b8;transition:all .2s" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#94a3b8'">
+        <i class="fa fa-bars" style="font-size:13px"></i>
+      </button>
+      
+      <!-- Logo -->
+      <div style="display:flex;align-items:center;gap:10px;margin-right:8px">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,0.3)">
+          <i class="fa fa-brain" style="color:#fff;font-size:13px"></i>
+        </div>
+        <span class="hidden md:block" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#f1f5f9">SmartClass <span style="color:#6366f1">AI</span></span>
+      </div>
+      
+      <!-- Workspace pill -->
+      <div class="hidden md:flex" style="align-items:center;gap:8px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer">
+        <div style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#06b6d4,#0891b2)"></div>
+        <span style="font-size:12px;font-weight:600;color:#94a3b8">ABES Institute</span>
+        <i class="fa fa-chevron-down" style="color:#475569;font-size:10px"></i>
+      </div>
+      
+      <!-- Search -->
+      <div style="flex:1;max-width:360px;position:relative" class="hidden md:block">
+        <i class="fa fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#475569;font-size:12px"></i>
+        <input type="text" onclick="openCmd()" placeholder="Search anything... (⌘K)" readonly style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:8px 12px 8px 34px;color:#94a3b8;font-size:13px;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif"/>
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:#3f4960;background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:4px">⌘K</span>
+      </div>
+      
+      <div style="flex:1"></div>
+      
+      <!-- Actions -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <!-- AI Button -->
+        <button onclick="navigateTo('ai')" class="hidden md:flex ai-pulse" style="align-items:center;gap:8px;padding:7px 14px;border-radius:9px;background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(168,85,247,0.15));border:1px solid rgba(99,102,241,0.3);cursor:pointer;color:#818cf8;font-size:12px;font-weight:600">
+          <i class="fa fa-wand-magic-sparkles" style="font-size:11px"></i>
+          <span>AI Assistant</span>
+        </button>
+        
+        <!-- Search mobile -->
+        <button onclick="openCmd()" class="flex md:hidden" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;color:#94a3b8">
+          <i class="fa fa-search" style="font-size:12px"></i>
+        </button>
+        
+        <!-- Notifications -->
+        <button onclick="navigateTo('notifications')" style="position:relative;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94a3b8">
+          <i class="fa fa-bell" style="font-size:13px"></i>
+          <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#6366f1;border:2px solid var(--bg)"></span>
+        </button>
+        
+        <!-- User menu -->
+        <div style="position:relative" id="user-menu-wrap">
+          <button onclick="toggleUserMenu()" style="display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer">
+            <div id="user-avatar" style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:12px;font-weight:700;color:#fff">DR</span>
+            </div>
+            <div class="hidden md:block" style="text-align:left">
+              <div id="nav-user-name" style="font-size:12px;font-weight:600;color:#e2e8f0">Dr. Rajesh Kumar</div>
+              <div id="nav-user-role" style="font-size:10px;color:#64748b">Admin</div>
+            </div>
+            <i class="fa fa-chevron-down hidden md:block" style="font-size:10px;color:#475569"></i>
+          </button>
+          <div id="user-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);min-width:220px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px;box-shadow:0 16px 48px rgba(0,0,0,0.5);z-index:300">
+            <div style="padding:10px 12px;border-bottom:1px solid var(--border);margin-bottom:6px">
+              <div id="dd-name" style="font-size:13px;font-weight:600;color:#e2e8f0">Dr. Rajesh Kumar</div>
+              <div id="dd-email" style="font-size:11px;color:#64748b">admin@smartclass.edu</div>
+            </div>
+            <div onclick="navigateTo('settings')" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><i class="fa fa-gear" style="width:14px"></i> Settings</div>
+            <div onclick="navigateTo('reports')" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"><i class="fa fa-file-chart-column" style="width:14px"></i> Reports</div>
+            <div style="height:1px;background:var(--border);margin:6px 0"></div>
+            <div onclick="logout()" style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:#fb7185;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='rgba(244,63,94,0.08)'" onmouseout="this.style.background='transparent'"><i class="fa fa-right-from-bracket" style="width:14px"></i> Sign Out</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <div style="display:flex;flex:1;overflow:hidden">
+    
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="glass" style="flex-shrink:0;height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden;position:sticky;top:60px;border-right:1px solid var(--border);border-radius:0;display:flex;flex-direction:column;padding:12px">
+      <div style="flex:1">
+        <!-- Nav items -->
+        <div style="margin-bottom:4px">
+          <div class="nav-item active" onclick="navigateTo('dashboard')" id="nav-dashboard">
+            <i class="fa fa-gauge-high icon"></i><span class="nav-label">Dashboard</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('timetable')" id="nav-timetable">
+            <i class="fa fa-calendar-days icon"></i><span class="nav-label">Timetable</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('ai')" id="nav-ai">
+            <i class="fa fa-wand-magic-sparkles icon"></i><span class="nav-label">AI Scheduler</span>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04)">
+          <div class="section-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4960;font-weight:600;padding:4px 14px;margin-bottom:4px">Management</div>
+          <div class="nav-item" onclick="navigateTo('classrooms')" id="nav-classrooms"><i class="fa fa-school icon"></i><span class="nav-label">Classrooms</span></div>
+          <div class="nav-item" onclick="navigateTo('faculty')" id="nav-faculty"><i class="fa fa-chalkboard-user icon"></i><span class="nav-label">Faculty</span></div>
+          <div class="nav-item" onclick="navigateTo('students')" id="nav-students"><i class="fa fa-graduation-cap icon"></i><span class="nav-label">Students</span></div>
+          <div class="nav-item" onclick="navigateTo('attendance')" id="nav-attendance"><i class="fa fa-clipboard-check icon"></i><span class="nav-label">Attendance</span></div>
+          <div class="nav-item" onclick="navigateTo('exams')" id="nav-exams"><i class="fa fa-file-pen icon"></i><span class="nav-label">Exams</span></div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04)">
+          <div class="section-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4960;font-weight:600;padding:4px 14px;margin-bottom:4px">Insights</div>
+          <div class="nav-item" onclick="navigateTo('analytics')" id="nav-analytics"><i class="fa fa-chart-mixed icon"></i><span class="nav-label">Analytics</span></div>
+          <div class="nav-item" onclick="navigateTo('reports')" id="nav-reports"><i class="fa fa-file-chart-column icon"></i><span class="nav-label">Reports</span></div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04)">
+          <div class="section-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#3f4960;font-weight:600;padding:4px 14px;margin-bottom:4px">System</div>
+          <div class="nav-item" onclick="navigateTo('notifications')" id="nav-notifications"><i class="fa fa-bell icon"></i><span class="nav-label">Notifications<span id="notif-badge" style="margin-left:auto;background:#6366f1;color:#fff;font-size:10px;padding:1px 6px;border-radius:99px">5</span></span></div>
+          <div class="nav-item" onclick="navigateTo('settings')" id="nav-settings"><i class="fa fa-gear icon"></i><span class="nav-label">Settings</span></div>
+        </div>
+      </div>
+      
+      <!-- Sidebar footer -->
+      <div style="padding:12px 0 4px;border-top:1px solid rgba(255,255,255,0.04);margin-top:12px">
+        <div style="padding:10px 12px;border-radius:10px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="width:6px;height:6px;border-radius:50%;background:#34d399"></div>
+            <span style="font-size:11px;color:#64748b;font-weight:500" class="nav-label">AI Engine Active</span>
+          </div>
+          <div style="font-size:11px;color:#475569" class="nav-label">v2.4.1 — 99.8% uptime</div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main id="main-content" style="flex:1;overflow-y:auto;min-width:0">
+      
+      <!-- DASHBOARD PAGE -->
+      <div id="page-dashboard" class="page active" style="padding:28px">
+        <!-- Header -->
+        <div style="margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+          <div>
+            <h1 class="section-title">Executive Dashboard</h1>
+            <p class="section-sub">Academic Year 2024–25 · Semester VII · <span id="current-date"></span></p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-secondary" onclick="runAIOptimize()"><i class="fa fa-wand-magic-sparkles"></i> AI Optimize</button>
+            <button class="btn-primary" onclick="navigateTo('timetable')"><i class="fa fa-plus"></i> New Schedule</button>
+          </div>
+        </div>
+        
+        <!-- Stat cards row 1 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px" id="stat-cards"></div>
+        
+        <!-- Charts row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px" id="dash-charts-row">
+          <div class="card" style="padding:20px;grid-column:span 2">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div><div style="font-size:14px;font-weight:600;color:#e2e8f0">Weekly Class Activity</div><div style="font-size:12px;color:#64748b">Classes scheduled vs. attended</div></div>
+              <div style="display:flex;gap:8px">
+                <button onclick="updateActivityChart('week')" class="btn-secondary" style="padding:5px 12px;font-size:11px">Week</button>
+                <button onclick="updateActivityChart('month')" class="btn-secondary" style="padding:5px 12px;font-size:11px">Month</button>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="activityChart"></canvas></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:4px">Dept. Distribution</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:16px">Students by department</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="deptChart"></canvas></div>
+          </div>
+        </div>
+        
+        <!-- Row 2 charts -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:4px">Room Utilization</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:16px">Occupancy rate by room type</div>
+            <div class="chart-wrap"><canvas id="roomChart"></canvas></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:4px">Faculty Workload</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:16px">Hours per week (current semester)</div>
+            <div class="chart-wrap"><canvas id="workloadChart"></canvas></div>
+          </div>
+        </div>
+        
+        <!-- Bottom row: Recent activity + AI feed + Top students -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px" id="dash-bottom">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:4px">Live Activity Feed</div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:16px">Real-time system events</div>
+            <div id="activity-feed" style="display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto"></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#6366f1;animation:pulse-ring 2s infinite"></div>
+              <div style="font-size:14px;font-weight:600;color:#e2e8f0">AI Insights</div>
+            </div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:16px">Optimization recommendations</div>
+            <div id="ai-insights" style="display:flex;flex-direction:column;gap:10px"></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Today's Schedule</div>
+            <div id="todays-schedule" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- TIMETABLE PAGE -->
+      <div id="page-timetable" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Smart Timetable</h1>
+            <p class="section-sub">Drag-and-drop schedule management with AI optimization</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <select class="inp" style="width:auto;padding:8px 14px;font-size:13px" onchange="filterTimetable(this.value)">
+              <option>All Departments</option>
+              <option>Computer Science</option>
+              <option>Electronics</option>
+              <option>Mechanical</option>
+              <option>Civil</option>
+            </select>
+            <select class="inp" style="width:auto;padding:8px 14px;font-size:13px">
+              <option>Semester VII</option>
+              <option>Semester V</option>
+              <option>Semester III</option>
+            </select>
+            <button class="btn-secondary" onclick="exportTimetable()"><i class="fa fa-download"></i> Export</button>
+            <button class="btn-primary" onclick="runAIScheduler()"><i class="fa fa-wand-magic-sparkles"></i> AI Generate</button>
+          </div>
+        </div>
+        
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-circle-check" style="color:#34d399"></i></div>
+            <div><div style="font-size:20px;font-weight:700;color:#e2e8f0">94%</div><div style="font-size:11px;color:#64748b">Efficiency</div></div>
+          </div>
+          <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-triangle-exclamation" style="color:#fbbf24"></i></div>
+            <div><div style="font-size:20px;font-weight:700;color:#e2e8f0">3</div><div style="font-size:11px;color:#64748b">Conflicts</div></div>
+          </div>
+          <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-calendar-days" style="color:#818cf8"></i></div>
+            <div><div style="font-size:20px;font-weight:700;color:#e2e8f0">148</div><div style="font-size:11px;color:#64748b">Classes/week</div></div>
+          </div>
+          <div class="card" style="padding:14px;display:flex;align-items:center;gap:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa fa-door-open" style="color:#22d3ee"></i></div>
+            <div><div style="font-size:20px;font-weight:700;color:#e2e8f0">12/15</div><div style="font-size:11px;color:#64748b">Rooms Used</div></div>
+          </div>
+        </div>
+        
+        <!-- Timetable grid -->
+        <div class="card" style="padding:20px;overflow-x:auto">
+          <div id="timetable-grid"></div>
+        </div>
+        
+        <!-- Legend -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#6366f1"></div><span style="font-size:12px;color:#64748b">CSE Subjects</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#06b6d4"></div><span style="font-size:12px;color:#64748b">Electronics</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#a855f7"></div><span style="font-size:12px;color:#64748b">Mathematics</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#f59e0b"></div><span style="font-size:12px;color:#64748b">Labs</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#10b981"></div><span style="font-size:12px;color:#64748b">Electives</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#ef4444"></div><span style="font-size:12px;color:#64748b">Conflict</span></div>
+        </div>
+      </div>
+      
+      <!-- AI SCHEDULER PAGE -->
+      <div id="page-ai" class="page" style="padding:28px">
+        <div style="margin-bottom:24px">
+          <h1 class="section-title grad-text">AI Optimization Center</h1>
+          <p class="section-sub">Intelligent scheduling, conflict resolution & predictive analytics</p>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <!-- AI Chat -->
+          <div class="card" style="padding:0;display:flex;flex-direction:column;height:500px">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+              <div class="ai-pulse" style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <i class="fa fa-brain" style="color:#fff;font-size:13px"></i>
+              </div>
+              <div><div style="font-size:13px;font-weight:600;color:#e2e8f0">SmartClass AI Assistant</div><div style="font-size:11px;color:#34d399">● Online · Powered by Neural Engine v2</div></div>
+            </div>
+            <div id="ai-chat-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"></div>
+            <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px">
+              <input id="ai-chat-input" type="text" class="inp" placeholder="Ask AI about scheduling, conflicts, optimization..." style="padding:10px 14px" onkeydown="if(event.key==='Enter')sendAIMsg()"/>
+              <button onclick="sendAIMsg()" class="btn-primary" style="padding:10px 16px;flex-shrink:0"><i class="fa fa-paper-plane"></i></button>
+            </div>
+          </div>
+          
+          <!-- AI Controls -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card" style="padding:20px">
+              <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px"><i class="fa fa-wand-magic-sparkles" style="color:#6366f1;margin-right:8px"></i>AI Schedule Generator</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Department</label>
+                  <select class="inp" style="font-size:13px"><option>All Departments</option><option>Computer Science</option><option>Electronics</option></select></div>
+                <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Optimization Priority</label>
+                  <select class="inp" style="font-size:13px"><option>Balanced (Recommended)</option><option>Faculty Preference</option><option>Room Efficiency</option><option>Student Load Balancing</option></select></div>
+                <div style="display:flex;gap:10px">
+                  <div style="flex:1"><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Semester</label>
+                    <select class="inp" style="font-size:13px"><option>Semester VII</option><option>Semester V</option></select></div>
+                  <div style="flex:1"><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Max Hours/Day</label>
+                    <select class="inp" style="font-size:13px"><option>6 hrs</option><option>7 hrs</option><option>8 hrs</option></select></div>
+                </div>
+                <button onclick="runAIScheduler()" class="btn-primary" style="width:100%;justify-content:center"><i class="fa fa-robot"></i> Generate Optimal Timetable</button>
+              </div>
+            </div>
+            
+            <div class="card" style="padding:20px">
+              <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:12px"><i class="fa fa-shield-check" style="color:#34d399;margin-right:8px"></i>AI Optimization Score</div>
+              <div style="text-align:center;padding:12px 0">
+                <div style="font-size:56px;font-weight:800;font-family:'Syne',sans-serif" class="grad-text">94<span style="font-size:28px">%</span></div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px">Timetable Efficiency Score</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;color:#94a3b8">Conflict-free slots</span>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:80px;height:4px;border-radius:99px;background:rgba(255,255,255,0.08)"><div style="width:97%;height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#06b6d4)"></div></div>
+                    <span style="font-size:12px;color:#34d399;font-weight:600">97%</span>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;color:#94a3b8">Faculty balance</span>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:80px;height:4px;border-radius:99px;background:rgba(255,255,255,0.08)"><div style="width:89%;height:100%;border-radius:99px;background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
+                    <span style="font-size:12px;color:#818cf8;font-weight:600">89%</span>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:12px;color:#94a3b8">Room utilization</span>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:80px;height:4px;border-radius:99px;background:rgba(255,255,255,0.08)"><div style="width:91%;height:100%;border-radius:99px;background:linear-gradient(90deg,#a855f7,#ec4899)"></div></div>
+                    <span style="font-size:12px;color:#c084fc;font-weight:600">91%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI processing log -->
+        <div class="card" style="padding:20px">
+          <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px"><i class="fa fa-terminal" style="color:#22d3ee;margin-right:8px"></i>AI Processing Log</div>
+          <div id="ai-log" style="font-family:monospace;font-size:12px;color:#64748b;max-height:180px;overflow-y:auto;background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px"></div>
+        </div>
+      </div>
+      
+      <!-- CLASSROOMS PAGE -->
+      <div id="page-classrooms" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Classroom Management</h1>
+            <p class="section-sub">Smart room allocation and real-time occupancy tracking</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-secondary" id="rooms-grid-btn" onclick="setRoomView('grid')" style="padding:8px 14px"><i class="fa fa-grid-2"></i></button>
+            <button class="btn-secondary" id="rooms-list-btn" onclick="setRoomView('list')" style="padding:8px 14px"><i class="fa fa-list"></i></button>
+            <button class="btn-primary" onclick="showAddRoomModal()"><i class="fa fa-plus"></i> Add Room</button>
+          </div>
+        </div>
+        
+        <!-- Filter chips -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="room-filters">
+          <button onclick="filterRooms('all')" class="badge badge-brand" style="cursor:pointer;padding:6px 14px;font-size:12px">All (15)</button>
+          <button onclick="filterRooms('smart')" class="badge badge-cyan" style="cursor:pointer;padding:6px 14px;font-size:12px">Smart Classrooms (6)</button>
+          <button onclick="filterRooms('lab')" class="badge badge-amber" style="cursor:pointer;padding:6px 14px;font-size:12px">Labs (4)</button>
+          <button onclick="filterRooms('seminar')" class="badge badge-purple" style="cursor:pointer;padding:6px 14px;font-size:12px">Seminar Halls (3)</button>
+          <button onclick="filterRooms('conference')" class="badge badge-emerald" style="cursor:pointer;padding:6px 14px;font-size:12px">Conference (2)</button>
+        </div>
+        
+        <!-- Summary stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;font-weight:700;color:#34d399">8</div><div style="font-size:12px;color:#64748b">Available Now</div></div>
+          <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;font-weight:700;color:#6366f1">5</div><div style="font-size:12px;color:#64748b">In Use</div></div>
+          <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;font-weight:700;color:#fbbf24">2</div><div style="font-size:12px;color:#64748b">Under Maintenance</div></div>
+          <div class="card" style="padding:14px;text-align:center"><div style="font-size:24px;font-weight:700;color:#e2e8f0">78%</div><div style="font-size:12px;color:#64748b">Avg. Utilization</div></div>
+        </div>
+        
+        <div id="rooms-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+      </div>
+      
+      <!-- FACULTY PAGE -->
+      <div id="page-faculty" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Faculty Management</h1>
+            <p class="section-sub">Workload management, scheduling preferences & analytics</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="position:relative">
+              <i class="fa fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#475569;font-size:12px"></i>
+              <input type="text" class="inp" placeholder="Search faculty..." style="padding-left:34px;width:220px" oninput="searchFaculty(this.value)"/>
+            </div>
+            <select class="inp" style="width:auto;font-size:13px">
+              <option>All Departments</option>
+              <option>Computer Science</option>
+              <option>Electronics</option>
+              <option>Mathematics</option>
+            </select>
+            <button class="btn-primary" onclick="showAddFacultyModal()"><i class="fa fa-user-plus"></i> Add Faculty</button>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+          <div>
+            <div class="card" style="overflow:hidden">
+              <div style="overflow-x:auto">
+                <table class="data-table" id="faculty-table">
+                  <thead>
+                    <tr>
+                      <th>Faculty</th>
+                      <th>Department</th>
+                      <th>Subjects</th>
+                      <th>Workload</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="faculty-tbody"></tbody>
+                </table>
+              </div>
+              <div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:12px;color:#64748b">Showing 1–10 of 24 faculty</span>
+                <div style="display:flex;gap:6px">
+                  <button class="btn-secondary" style="padding:5px 12px;font-size:12px">← Prev</button>
+                  <button class="btn-primary" style="padding:5px 12px;font-size:12px">Next →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Side panel: Faculty analytics -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card" style="padding:20px">
+              <div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Workload Distribution</div>
+              <div class="chart-wrap" style="height:200px"><canvas id="facultyWorkChart"></canvas></div>
+            </div>
+            <div class="card" style="padding:20px">
+              <div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:12px">Department Stats</div>
+              <div id="dept-stats" style="display:flex;flex-direction:column;gap:10px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- STUDENTS PAGE -->
+      <div id="page-students" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Student Portal</h1>
+            <p class="section-sub">Academic performance, attendance & schedule management</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="position:relative">
+              <i class="fa fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#475569;font-size:12px"></i>
+              <input type="text" class="inp" placeholder="Search students..." style="padding-left:34px;width:200px" oninput="searchStudents(this.value)"/>
+            </div>
+            <select class="inp" style="width:auto;font-size:13px">
+              <option>All Semesters</option>
+              <option>Semester VII</option>
+              <option>Semester V</option>
+              <option>Semester III</option>
+            </select>
+            <button class="btn-primary" onclick="showAddStudentModal()"><i class="fa fa-user-plus"></i> Add Student</button>
+          </div>
+        </div>
+        
+        <!-- Student profile card (if selected) -->
+        <div id="student-profile" style="display:none;margin-bottom:20px"></div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px" id="students-grid"></div>
+        
+        <!-- Pagination -->
+        <div style="margin-top:20px;display:flex;align-items:center;justify-content:center;gap:8px" id="students-pager"></div>
+      </div>
+      
+      <!-- ATTENDANCE PAGE -->
+      <div id="page-attendance" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Attendance Management</h1>
+            <p class="section-sub">QR-based tracking, analytics & defaulter alerts</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-secondary" onclick="showQRModal()"><i class="fa fa-qrcode"></i> Generate QR</button>
+            <button class="btn-primary" onclick="markAttendance()"><i class="fa fa-clipboard-check"></i> Mark Attendance</button>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px">
+          <div class="card stat-card" style="padding:20px;text-align:center">
+            <div style="position:relative;width:80px;height:80px;margin:0 auto 12px">
+              <svg viewBox="0 0 80 80" style="width:80px;height:80px;transform:rotate(-90deg)">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="20" class="progress-ring"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#34d399">90%</div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:#e2e8f0">Overall Attendance</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px">This semester</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#6366f1;margin-bottom:8px">1,247</div>
+            <div style="font-size:13px;font-weight:600;color:#e2e8f0">Classes Conducted</div>
+            <div style="font-size:11px;color:#34d399;margin-top:4px">↑ 12% vs last semester</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#fbbf24;margin-bottom:8px">38</div>
+            <div style="font-size:13px;font-weight:600;color:#e2e8f0">Defaulters</div>
+            <div style="font-size:11px;color:#fb7185;margin-top:4px">Below 75% threshold</div>
+          </div>
+          <div class="card" style="padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#22d3ee;margin-bottom:8px">96%</div>
+            <div style="font-size:13px;font-weight:600;color:#e2e8f0">Today's Attendance</div>
+            <div style="font-size:11px;color:#64748b;margin-top:4px">482 of 500 students</div>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Monthly Attendance Trend</div>
+            <div class="chart-wrap"><canvas id="attendanceChart"></canvas></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Subject-wise Attendance</div>
+            <div class="chart-wrap"><canvas id="subjectAttChart"></canvas></div>
+          </div>
+        </div>
+        
+        <!-- Defaulters table -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0"><i class="fa fa-triangle-exclamation" style="color:#fbbf24;margin-right:8px"></i>Attendance Defaulters</div>
+            <button class="btn-secondary" style="padding:6px 14px;font-size:12px" onclick="showToast('Defaulter report exported','success')"><i class="fa fa-download"></i> Export</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table" id="defaulters-table">
+              <thead><tr><th>Student</th><th>Roll No.</th><th>Department</th><th>Attendance %</th><th>Absent Days</th><th>Action</th></tr></thead>
+              <tbody id="defaulters-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- EXAMS PAGE -->
+      <div id="page-exams" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Exam Management</h1>
+            <p class="section-sub">Schedule, hall allocation & seating arrangements</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-secondary" onclick="showToast('Exam timetable downloaded','success')"><i class="fa fa-download"></i> Download Schedule</button>
+            <button class="btn-primary" onclick="showAddExamModal()"><i class="fa fa-plus"></i> Schedule Exam</button>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Upcoming Exams</div>
+            <div id="exam-list" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Hall Allocation</div>
+            <div id="hall-allocation" style="display:flex;flex-direction:column;gap:10px"></div>
+          </div>
+        </div>
+        
+        <div class="card" style="padding:20px">
+          <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Seating Matrix — Room 101A (60 seats)</div>
+          <div id="seating-matrix" style="display:grid;grid-template-columns:repeat(10,1fr);gap:6px"></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#6366f1"></div><span style="font-size:12px;color:#64748b">Occupied</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#0f1117;border:1px solid #1e2433"></div><span style="font-size:12px;color:#64748b">Empty</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:3px;background:#f59e0b"></div><span style="font-size:12px;color:#64748b">Invigilator</span></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ANALYTICS PAGE -->
+      <div id="page-analytics" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div>
+            <h1 class="section-title">Advanced Analytics</h1>
+            <p class="section-sub">Data-driven insights for smarter decisions</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <select class="inp" style="width:auto;font-size:13px"><option>Last 30 days</option><option>Last 90 days</option><option>This Semester</option></select>
+            <button class="btn-secondary" onclick="showToast('Analytics report exported','success')"><i class="fa fa-download"></i> Export</button>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Room Utilization Heatmap</div>
+            <div id="heatmap-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
+            <div style="margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:flex-end">
+              <span style="font-size:11px;color:#475569">Low</span>
+              <div style="display:flex;gap:2px">
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(99,102,241,0.1)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(99,102,241,0.3)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(99,102,241,0.5)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:rgba(99,102,241,0.75)"></div>
+                <div style="width:12px;height:12px;border-radius:2px;background:#6366f1"></div>
+              </div>
+              <span style="font-size:11px;color:#475569">High</span>
+            </div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Peak Usage Timings</div>
+            <div class="chart-wrap"><canvas id="peakChart"></canvas></div>
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Timetable Efficiency</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="effChart"></canvas></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Dept. Attendance Comparison</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="deptAttChart"></canvas></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:16px">AI Optimization Trend</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="aiTrendChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- NOTIFICATIONS PAGE -->
+      <div id="page-notifications" class="page" style="padding:28px">
+        <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h1 class="section-title">Notification Center</h1>
+            <p class="section-sub">System alerts, schedule changes & academic reminders</p>
+          </div>
+          <button class="btn-secondary" onclick="markAllRead()"><i class="fa fa-check-double"></i> Mark all read</button>
+        </div>
+        
+        <!-- Filter tabs -->
+        <div style="display:flex;gap:4px;background:rgba(255,255,255,0.03);padding:4px;border-radius:10px;border:1px solid var(--border);margin-bottom:20px;width:fit-content">
+          <button onclick="filterNotifs('all')" id="notif-tab-all" style="padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;background:#6366f1;color:#fff;border:none">All</button>
+          <button onclick="filterNotifs('schedule')" id="notif-tab-schedule" style="padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:#64748b;border:none">Schedule</button>
+          <button onclick="filterNotifs('attendance')" id="notif-tab-attendance" style="padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:#64748b;border:none">Attendance</button>
+          <button onclick="filterNotifs('exam')" id="notif-tab-exam" style="padding:7px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:#64748b;border:none">Exams</button>
+        </div>
+        
+        <div id="notifs-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      
+      <!-- REPORTS PAGE -->
+      <div id="page-reports" class="page" style="padding:28px">
+        <div style="margin-bottom:24px">
+          <h1 class="section-title">Reports Center</h1>
+          <p class="section-sub">Generate, schedule and export comprehensive reports</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px" id="reports-grid"></div>
+      </div>
+      
+      <!-- SETTINGS PAGE -->
+      <div id="page-settings" class="page" style="padding:28px">
+        <div style="margin-bottom:24px">
+          <h1 class="section-title">Settings</h1>
+          <p class="section-sub">Customize your SmartClass AI experience</p>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:220px 1fr;gap:24px">
+          <!-- Settings nav -->
+          <div class="card" style="padding:12px;height:fit-content">
+            <div id="settings-nav">
+              <div onclick="showSettingsTab('general')" class="nav-item active" id="stab-general"><i class="fa fa-sliders icon"></i><span>General</span></div>
+              <div onclick="showSettingsTab('notifications')" class="nav-item" id="stab-notifications"><i class="fa fa-bell icon"></i><span>Notifications</span></div>
+              <div onclick="showSettingsTab('academic')" class="nav-item" id="stab-academic"><i class="fa fa-graduation-cap icon"></i><span>Academic</span></div>
+              <div onclick="showSettingsTab('users')" class="nav-item" id="stab-users"><i class="fa fa-users icon"></i><span>User Management</span></div>
+              <div onclick="showSettingsTab('security')" class="nav-item" id="stab-security"><i class="fa fa-shield icon"></i><span>Security</span></div>
+              <div onclick="showSettingsTab('backup')" class="nav-item" id="stab-backup"><i class="fa fa-database icon"></i><span>Backup</span></div>
+            </div>
+          </div>
+          
+          <!-- Settings content -->
+          <div id="settings-content"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- BOTTOM NAV (mobile) -->
+  <nav id="bottom-nav" style="justify-content:space-around;align-items:center">
+    <button onclick="navigateTo('dashboard')" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:8px 12px">
+      <i class="fa fa-gauge-high" style="font-size:18px"></i><span>Home</span>
+    </button>
+    <button onclick="navigateTo('timetable')" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:8px 12px">
+      <i class="fa fa-calendar" style="font-size:18px"></i><span>Schedule</span>
+    </button>
+    <button onclick="navigateTo('ai')" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;cursor:pointer;color:#fff;font-size:10px;padding:8px 14px;border-radius:12px">
+      <i class="fa fa-brain" style="font-size:18px"></i><span>AI</span>
+    </button>
+    <button onclick="navigateTo('attendance')" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:8px 12px">
+      <i class="fa fa-clipboard" style="font-size:18px"></i><span>Attend.</span>
+    </button>
+    <button onclick="navigateTo('notifications')" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:8px 12px">
+      <i class="fa fa-bell" style="font-size:18px"></i><span>Notifs</span>
+    </button>
+  </nav>
+</div>
+
+<!-- AI PROCESSING OVERLAY -->
+<div id="ai-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);z-index:800;flex-direction:column;align-items:center;justify-content:center">
+  <div style="text-align:center;max-width:400px;padding:40px">
+    <div style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#6366f1,#a855f7);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;animation:float 2s ease-in-out infinite;box-shadow:0 0 40px rgba(99,102,241,0.4)">
+      <i class="fa fa-brain" style="font-size:32px;color:#fff"></i>
+    </div>
+    <h3 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:8px">AI Processing</h3>
+    <p id="ai-overlay-msg" style="font-size:14px;color:#64748b;margin-bottom:24px">Analyzing constraints and generating optimal timetable...</p>
+    <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin-bottom:12px">
+      <div id="ai-progress" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#6366f1,#a855f7,#06b6d4);animation:ai-thinking 3s ease forwards;width:0%"></div>
+    </div>
+    <div id="ai-step-text" style="font-size:12px;color:#475569">Initializing neural engine...</div>
+  </div>
+</div>
+
+<!-- MODALS CONTAINER -->
+<div id="modals"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CORE DATA
+// ═══════════════════════════════════════════════════════════════════
+
+const DEPARTMENTS = ['Computer Science & Engineering','Electronics & Communication','Mechanical Engineering','Civil Engineering','Applied Mathematics','Physics','Chemistry'];
+const SUBJECTS = {
+  'Computer Science & Engineering':['Data Structures','Algorithms','DBMS','Operating Systems','Computer Networks','Machine Learning','Web Technologies','Software Engineering','Compiler Design','Computer Architecture'],
+  'Electronics & Communication':['Digital Electronics','Analog Circuits','Signal Processing','VLSI Design','Microprocessors','Communication Systems','Embedded Systems','Control Systems'],
+  'Mechanical Engineering':['Thermodynamics','Fluid Mechanics','Machine Design','Manufacturing Processes','Heat Transfer','Engineering Materials','CAD/CAM'],
+  'Civil Engineering':['Structural Analysis','Geotechnical Engineering','Highway Engineering','Surveying','Concrete Technology','Environmental Engg'],
+  'Applied Mathematics':['Linear Algebra','Calculus','Differential Equations','Numerical Methods','Discrete Mathematics','Probability & Statistics'],
+  'Physics':['Quantum Mechanics','Classical Mechanics','Electromagnetism','Optics','Solid State Physics'],
+  'Chemistry':['Organic Chemistry','Inorganic Chemistry','Physical Chemistry','Analytical Chemistry']
+};
+const ROOM_TYPES = ['Smart Classroom','Lab','Seminar Hall','Conference Room'];
+const TIME_SLOTS = ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'];
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const SHORT_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function pick(arr){return arr[rand(0,arr.length-1)]}
+function initials(name){return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+
+const FIRST_NAMES_M = ['Rahul','Arjun','Karan','Vikram','Sanjay','Amit','Rohit','Pranav','Aditya','Vishal','Suresh','Deepak','Manoj','Rakesh','Ajay','Nikhil','Anand','Pratik','Shubham','Akash'];
+const FIRST_NAMES_F = ['Priya','Sneha','Anita','Pooja','Divya','Neha','Kavya','Ritu','Sunita','Meera','Anjali','Swati','Nidhi','Preeti','Shweta','Shruti','Aparna','Rekha','Geeta','Lalita'];
+const LAST_NAMES = ['Sharma','Verma','Singh','Patel','Kumar','Gupta','Mishra','Yadav','Joshi','Tiwari','Pandey','Agarwal','Mehta','Chauhan','Rajput','Trivedi','Shukla','Dubey','Srivastava','Rao'];
+
+function randomName(gender='any'){
+  const first = gender==='m' ? pick(FIRST_NAMES_M) : gender==='f' ? pick(FIRST_NAMES_F) : pick([...FIRST_NAMES_M,...FIRST_NAMES_F]);
+  return first + ' ' + pick(LAST_NAMES);
+}
+
+// Generate faculty
+const FACULTY = Array.from({length:24},(_,i)=>{
+  const gender = i%3===0?'f':'m';
+  const name = (gender==='f'?'Dr. ':'Prof. ') + randomName(gender);
+  const dept = DEPARTMENTS[i%DEPARTMENTS.length];
+  return {
+    id:`F${String(i+1).padStart(3,'0')}`,
+    name,gender,dept,
+    subjects:(SUBJECTS[dept]||['General Studies']).slice(0,rand(2,4)),
+    workload:rand(14,22),
+    experience:rand(2,25),
+    email:name.split(' ').pop().toLowerCase()+'@abes.edu',
+    phone:`+91 ${rand(70000,99999)}${rand(10000,99999)}`,
+    status:['Active','Active','Active','On Leave'][rand(0,3)],
+    rating:(3.5+Math.random()*1.5).toFixed(1),
+    avatar:`hsl(${rand(220,280)},60%,55%)`
+  }
+});
+
+// Generate students
+const STUDENTS = Array.from({length:60},(_,i)=>{
+  const gender = i%2===0?'m':'f';
+  const name = randomName(gender);
+  const dept = DEPARTMENTS[i%5];
+  const sem = [3,5,7][i%3];
+  const att = rand(65,98);
+  return {
+    id:`SC${String(i+1).padStart(4,'0')}`,
+    rollNo:`${dept.split(' ')[0].toUpperCase().slice(0,2)}${sem}${String(i+1).padStart(3,'0')}`,
+    name,gender,dept,sem,
+    email:name.split(' ').join('.').toLowerCase()+'@student.abes.edu',
+    attendance:att,
+    gpa:(6+Math.random()*4).toFixed(2),
+    subjects:SUBJECTS[dept]?.slice(0,5)||[],
+    status:att<75?'Defaulter':att<85?'Warning':'Good',
+    avatar:`hsl(${rand(180,320)},55%,60%)`
+  }
+});
+
+// Generate rooms
+const ROOMS = [
+  {id:'R101',name:'Room 101A',type:'Smart Classroom',capacity:60,floor:1,building:'Main Block',equipment:['Projector','AC','Smart Board','Camera'],status:'available',utilization:92},
+  {id:'R102',name:'Room 102B',type:'Smart Classroom',capacity:60,floor:1,building:'Main Block',equipment:['Projector','AC','Smart Board'],status:'occupied',utilization:87},
+  {id:'R103',name:'Room 103C',type:'Smart Classroom',capacity:40,floor:1,building:'Main Block',equipment:['Projector','AC'],status:'available',utilization:74},
+  {id:'R201',name:'Room 201',type:'Smart Classroom',capacity:80,floor:2,building:'Main Block',equipment:['Projector','AC','Smart Board','Recording'],status:'available',utilization:68},
+  {id:'R202',name:'Room 202',type:'Smart Classroom',capacity:80,floor:2,building:'Main Block',equipment:['Projector','AC'],status:'maintenance',utilization:0},
+  {id:'L101',name:'CS Lab 1',type:'Lab',capacity:30,floor:1,building:'Lab Block',equipment:['50 Workstations','AC','Server','Internet'],status:'occupied',utilization:95},
+  {id:'L102',name:'CS Lab 2',type:'Lab',capacity:30,floor:1,building:'Lab Block',equipment:['50 Workstations','AC','Internet'],status:'available',utilization:80},
+  {id:'L201',name:'Electronics Lab',type:'Lab',capacity:25,floor:2,building:'Lab Block',equipment:['Oscilloscopes','Power Supplies','Function Generators'],status:'available',utilization:62},
+  {id:'L202',name:'Mech. Workshop',type:'Lab',capacity:20,floor:1,building:'Workshop',equipment:['CNC Machine','Lathe','Milling Machine'],status:'maintenance',utilization:0},
+  {id:'SH1',name:'Seminar Hall A',type:'Seminar Hall',capacity:150,floor:3,building:'Main Block',equipment:['Projector','Stage','PA System','AC'],status:'available',utilization:45},
+  {id:'SH2',name:'Seminar Hall B',type:'Seminar Hall',capacity:100,floor:3,building:'Main Block',equipment:['Projector','AC','Video Conf'],status:'occupied',utilization:78},
+  {id:'SH3',name:'Mini Auditorium',type:'Seminar Hall',capacity:200,floor:4,building:'Main Block',equipment:['Stage','PA','Projector','AC'],status:'available',utilization:30},
+  {id:'CR1',name:'Conference Room 1',type:'Conference Room',capacity:20,floor:2,building:'Admin Block',equipment:['Smart TV','Video Conf','AC'],status:'occupied',utilization:55},
+  {id:'CR2',name:'Conference Room 2',type:'Conference Room',capacity:15,floor:2,building:'Admin Block',equipment:['Smart TV','AC'],status:'available',utilization:40},
+  {id:'R301',name:'Room 301',type:'Smart Classroom',capacity:60,floor:3,building:'New Block',equipment:['Projector','AC','Smart Board'],status:'available',utilization:71}
+];
+
+// Timetable data
+const SUBJECT_COLORS = ['#6366f1','#06b6d4','#a855f7','#f59e0b','#10b981','#ef4444','#ec4899','#0ea5e9','#84cc16','#f97316'];
+const TT_DATA = {};
+DAYS.forEach(day=>{
+  TT_DATA[day]={};
+  TIME_SLOTS.slice(0,8).forEach((slot,si)=>{
+    if(Math.random()>0.35&&!(slot==='12:00 PM'&&Math.random()>0.3)){
+      const dept = pick(DEPARTMENTS.slice(0,4));
+      const subj = pick(SUBJECTS[dept]||['General Studies']);
+      const faculty = pick(FACULTY.filter(f=>f.dept===dept||Math.random()>0.5));
+      const room = pick(ROOMS.filter(r=>r.type==='Smart Classroom'));
+      TT_DATA[day][slot]={
+        subject:subj,faculty:faculty.name,room:room.name,
+        dept,color:SUBJECT_COLORS[si%SUBJECT_COLORS.length],
+        conflict:Math.random()<0.04
+      };
+    }
+  });
+});
+
+// Notifications
+let NOTIFICATIONS = [
+  {id:1,type:'schedule',title:'Timetable Updated','msg':'AI has resolved 3 scheduling conflicts in Sem VII timetable.',time:'2 min ago',read:false,icon:'calendar',color:'#6366f1'},
+  {id:2,type:'attendance',title:'Low Attendance Alert','msg':'15 students in CS-VII have attendance below 75%.',time:'18 min ago',read:false,icon:'triangle-exclamation',color:'#f59e0b'},
+  {id:3,type:'schedule',title:'Room Change','msg':'Room 202 maintenance. Classes moved to Room 301.',time:'1 hr ago',read:false,icon:'door-open',color:'#06b6d4'},
+  {id:4,type:'exam',title:'Exam Schedule Released','msg':'End semester exam schedule for November 2025 is now live.',time:'3 hrs ago',read:false,icon:'file-pen',color:'#a855f7'},
+  {id:5,type:'schedule',title:'Faculty Substitute','msg':'Dr. Anita Sharma will cover Prof. V. Kumar\'s Data Structures class tomorrow.',time:'5 hrs ago',read:true,icon:'chalkboard-user',color:'#10b981'},
+  {id:6,type:'attendance',title:'Attendance Report Ready','msg':'Monthly attendance report for October is ready to download.',time:'1 day ago',read:true,icon:'file-chart-column',color:'#34d399'},
+  {id:7,type:'exam',title:'Hall Allocation Complete','msg':'AI has allocated halls for End Semester exams with zero conflicts.',time:'2 days ago',read:true,icon:'building',color:'#818cf8'},
+  {id:8,type:'schedule',title:'AI Optimization Complete','msg':'Timetable efficiency improved from 87% to 94% after AI optimization.',time:'3 days ago',read:true,icon:'wand-magic-sparkles',color:'#c084fc'}
+];
+
+const EXAMS = [
+  {subject:'Data Structures & Algorithms',dept:'CSE',date:'Nov 15, 2025',time:'9:00 AM',duration:'3 hrs',hall:'SH1',students:180,invigilator:'Dr. Rajesh Kumar'},
+  {subject:'Database Management Systems',dept:'CSE',date:'Nov 17, 2025',time:'9:00 AM',duration:'3 hrs',hall:'R201',students:160,invigilator:'Prof. Anita Sharma'},
+  {subject:'Computer Networks',dept:'CSE',date:'Nov 19, 2025',time:'2:00 PM',duration:'3 hrs',hall:'SH2',students:145,invigilator:'Prof. Suresh Yadav'},
+  {subject:'Signal Processing',dept:'ECE',date:'Nov 16, 2025',time:'2:00 PM',duration:'3 hrs',hall:'R101',students:120,invigilator:'Dr. Priya Verma'},
+  {subject:'Thermodynamics',dept:'ME',date:'Nov 18, 2025',time:'9:00 AM',duration:'3 hrs',hall:'R102',students:110,invigilator:'Prof. Rohit Singh'},
+  {subject:'Engineering Mathematics',dept:'All',date:'Nov 20, 2025',time:'9:00 AM',duration:'3 hrs',hall:'SH1+SH2',students:300,invigilator:'Dr. Meera Joshi'}
+];
+
+// AI responses
+const AI_RESPONSES = [
+  'Analyzing the current timetable structure... I\'ve identified 3 scheduling conflicts that can be resolved by shifting Friday afternoon slots.',
+  'Recommendation: Move Dr. Sharma\'s Computer Networks class from Tuesday 11 AM to Wednesday 2 PM. This eliminates the room conflict with the ECE lab session.',
+  'Based on faculty workload analysis, Prof. Kumar is overloaded with 22 hours/week. I suggest redistributing 2 classes to Prof. Singh who has capacity.',
+  'Room utilization insight: Room 101A is at 92% utilization. Consider using Room 201 for overflow. Current waste: 8% capacity daily.',
+  'Attendance prediction: 12 students are at risk of dropping below 75% by month end. Early intervention recommended for CS Sem VII.',
+  'Optimal scheduling window detected: Monday 10-11 AM has the highest faculty and room availability. Ideal for important lectures.',
+  'AI has generated an optimized timetable with 97% conflict-free slots and balanced faculty workload across all departments.',
+  'Substitution suggestion: For Dr. Kumar\'s absence tomorrow, Prof. Verma is available and teaches the same subject. Auto-notify students?'
+];
+
+let aiMsgIdx = 0;
+let currentUser = null;
+
+// ═══════════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════════
+
+function demoLogin(role){
+  const creds = {
+    admin:{email:'admin@smartclass.edu',pass:'admin123',name:'Dr. Rajesh Kumar',role:'Admin',initials:'DR'},
+    faculty:{email:'faculty@smartclass.edu',pass:'faculty123',name:'Prof. Anita Sharma',role:'Faculty',initials:'AS'},
+    student:{email:'student@smartclass.edu',pass:'student123',name:'Arjun Mehta',role:'Student',initials:'AM'}
+  };
+  const c = creds[role];
+  document.getElementById('login-email').value=c.email;
+  document.getElementById('login-pass').value=c.pass;
+  setTimeout(()=>loginUser(c),300);
+}
+
+function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  if(!email||!pass){showToast('Please fill in all fields','error');return;}
+  const roleMap = {admin:{name:'Dr. Rajesh Kumar',role:'Admin',initials:'DR'},'faculty@smartclass.edu':{name:'Prof. Anita Sharma',role:'Faculty',initials:'AS'},'student@smartclass.edu':{name:'Arjun Mehta',role:'Student',initials:'AM'}};
+  const user = email.includes('admin')?roleMap.admin:email.includes('faculty')?roleMap['faculty@smartclass.edu']:email.includes('student')?roleMap['student@smartclass.edu']:{name:email.split('@')[0],role:'Faculty',initials:email[0].toUpperCase()};
+  loginUser({...user,email});
+}
+
+function loginUser(user){
+  currentUser=user;
+  // Show loading
+  document.getElementById('auth-screen').style.opacity='0';
+  document.getElementById('auth-screen').style.transition='opacity .5s ease';
+  setTimeout(()=>{
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('app').style.flexDirection='column';
+    // Update user info
+    document.getElementById('nav-user-name').textContent=user.name;
+    document.getElementById('nav-user-role').textContent=user.role;
+    document.getElementById('dd-name').textContent=user.name;
+    document.getElementById('dd-email').textContent=user.email||'user@smartclass.edu';
+    document.getElementById('user-avatar').innerHTML=`<span style="font-size:11px;font-weight:700;color:#fff">${user.initials}</span>`;
+    initApp();
+    showToast(`Welcome back, ${user.name.split(' ')[0]}! 👋`,'success');
+  },500);
+}
+
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='block';
+  document.getElementById('auth-screen').style.opacity='1';
+  showLogin();
+}
+
+function togglePass(id,btn){
+  const inp=document.getElementById(id);
+  if(inp.type==='password'){inp.type='text';btn.innerHTML='<i class="fa fa-eye-slash"></i>'}
+  else{inp.type='password';btn.innerHTML='<i class="fa fa-eye"></i>'}
+}
+function showLogin(){document.getElementById('auth-login-view').style.display='block';document.getElementById('auth-signup-view').style.display='none';document.getElementById('auth-forgot-view').style.display='none'}
+function showSignup(){document.getElementById('auth-login-view').style.display='none';document.getElementById('auth-signup-view').style.display='block';document.getElementById('auth-forgot-view').style.display='none'}
+function showForgot(){document.getElementById('auth-login-view').style.display='none';document.getElementById('auth-signup-view').style.display='none';document.getElementById('auth-forgot-view').style.display='block'}
+
+// Particles
+function initParticles(){
+  const c=document.getElementById('auth-particles');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='auth-particle';
+    p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--tx:${(Math.random()-0.5)*200}px;--ty:${-Math.random()*300-100}px;animation-delay:${Math.random()*4}s;animation-duration:${4+Math.random()*4}s;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;opacity:${0.3+Math.random()*0.5}`;
+    c.appendChild(p);
+  }
+}
+initParticles();
+
+// ═══════════════════════════════════════════════════════════════════
+// APP INIT
+// ═══════════════════════════════════════════════════════════════════
+
+let chartsInitialized = false;
+let sidebarCollapsed = false;
+
+function initApp(){
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  initStatCards();
+  initActivityFeed();
+  initAIInsights();
+  initTodaySchedule();
+  initCmdPalette();
+  initNotifications();
+  initRooms();
+  initFaculty();
+  initStudents();
+  initTimetable();
+  initExams();
+  initReports();
+  initSeatingMatrix();
+  initDefaulters();
+  initAIChat();
+  initAILog();
+  initSettingsContent();
+  setTimeout(()=>{
+    initCharts();
+    chartsInitialized=true;
+  },300);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+
+let currentPage = 'dashboard';
+
+function navigateTo(page){
+  // Close dropdowns
+  document.getElementById('user-dropdown').style.display='none';
+  closeCmd();
+  
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  
+  const pageEl = document.getElementById(`page-${page}`);
+  const navEl = document.getElementById(`nav-${page}`);
+  
+  if(pageEl) pageEl.classList.add('active');
+  if(navEl) navEl.classList.add('active');
+  
+  currentPage = page;
+  
+  // Lazy init charts
+  if(page==='analytics' && !document.getElementById('peakChart').chart){
+    initAnalyticsCharts();
+  }
+  if(page==='attendance' && !document.getElementById('attendanceChart').chart){
+    initAttendanceCharts();
+  }
+  if(page==='faculty' && !document.getElementById('facultyWorkChart').chart){
+    initFacultyCharts();
+  }
+  
+  // Scroll top
+  document.getElementById('main-content').scrollTo(0,0);
+}
+
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  const sb=document.getElementById('sidebar');
+  if(window.innerWidth<=768){
+    sb.classList.toggle('open');
+  } else {
+    sb.classList.toggle('collapsed');
+    document.getElementById('main-content').style.transition='all .35s ease';
+  }
+}
+
+function toggleUserMenu(){
+  const dd=document.getElementById('user-dropdown');
+  dd.style.display=dd.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('user-menu-wrap');
+  if(wrap&&!wrap.contains(e.target)) document.getElementById('user-dropdown').style.display='none';
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════
+
+function showToast(msg,type='info',duration=3500){
+  const icons={success:'circle-check',error:'circle-xmark',warning:'triangle-exclamation',info:'circle-info'};
+  const colors={success:'#34d399',error:'#fb7185',warning:'#fbbf24',info:'#818cf8'};
+  const t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML=`<i class="fa fa-${icons[type]}" style="color:${colors[type]};font-size:18px;flex-shrink:0"></i><span style="font-size:13px;font-weight:500;color:#e2e8f0;flex:1">${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#475569;cursor:pointer;font-size:14px;flex-shrink:0"><i class="fa fa-xmark"></i></button>`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{t.classList.add('removing');setTimeout(()=>t.remove(),300)},duration);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COMMAND PALETTE
+// ═══════════════════════════════════════════════════════════════════
+
+const CMD_ITEMS = [
+  {label:'Dashboard',icon:'gauge-high',action:()=>navigateTo('dashboard')},
+  {label:'Timetable',icon:'calendar-days',action:()=>navigateTo('timetable')},
+  {label:'AI Scheduler',icon:'wand-magic-sparkles',action:()=>navigateTo('ai')},
+  {label:'Classrooms',icon:'school',action:()=>navigateTo('classrooms')},
+  {label:'Faculty Management',icon:'chalkboard-user',action:()=>navigateTo('faculty')},
+  {label:'Students',icon:'graduation-cap',action:()=>navigateTo('students')},
+  {label:'Attendance',icon:'clipboard-check',action:()=>navigateTo('attendance')},
+  {label:'Exams',icon:'file-pen',action:()=>navigateTo('exams')},
+  {label:'Analytics',icon:'chart-mixed',action:()=>navigateTo('analytics')},
+  {label:'Notifications',icon:'bell',action:()=>navigateTo('notifications')},
+  {label:'Reports',icon:'file-chart-column',action:()=>navigateTo('reports')},
+  {label:'Settings',icon:'gear',action:()=>navigateTo('settings')},
+  {label:'Generate AI Timetable',icon:'robot',action:()=>runAIScheduler()},
+  {label:'Export Reports',icon:'download',action:()=>showToast('Report generation started','info')},
+  {label:'Mark Attendance',icon:'clipboard-check',action:()=>navigateTo('attendance')},
+];
+
+function initCmdPalette(){
+  renderCmdResults('');
+}
+
+function renderCmdResults(q){
+  const res=document.getElementById('cmd-results');
+  const filtered=q?CMD_ITEMS.filter(i=>i.label.toLowerCase().includes(q.toLowerCase())):CMD_ITEMS;
+  res.innerHTML=filtered.map(item=>`
+    <div onclick="(${item.action.toString()})();closeCmd()" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(99,102,241,0.1)'" onmouseout="this.style.background='transparent'">
+      <i class="fa fa-${item.icon}" style="color:#6366f1;width:16px;text-align:center;font-size:13px"></i>
+      <span style="font-size:14px;color:#e2e8f0">${item.label}</span>
+    </div>
+  `).join('');
+}
+
+function filterCmd(v){renderCmdResults(v)}
+function openCmd(){
+  document.getElementById('cmd-palette').classList.add('active');
+  document.getElementById('cmd-backdrop').style.display='block';
+  document.getElementById('cmd-input').value='';
+  document.getElementById('cmd-input').focus();
+  renderCmdResults('');
+}
+function closeCmd(){
+  document.getElementById('cmd-palette').classList.remove('active');
+  document.getElementById('cmd-backdrop').style.display='none';
+}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmd()}if(e.key==='Escape')closeCmd()});
+
+// ═══════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+
+function initStatCards(){
+  const cards = [
+    {label:'Total Students',value:847,icon:'graduation-cap',color:'#6366f1',bg:'rgba(99,102,241,0.12)',trend:'+12%',trendUp:true,sub:'vs last semester'},
+    {label:'Faculty Members',value:24,icon:'chalkboard-user',color:'#06b6d4',bg:'rgba(6,182,212,0.12)',trend:'+2',trendUp:true,sub:'3 on leave'},
+    {label:'Active Rooms',value:13,icon:'school',color:'#a855f7',bg:'rgba(168,85,247,0.12)',trend:'87%',trendUp:true,sub:'utilization'},
+    {label:"Today's Classes",value:48,icon:'calendar-days',color:'#10b981',bg:'rgba(16,185,129,0.12)',trend:'+5',trendUp:true,sub:'vs yesterday'},
+    {label:'Timetable Efficiency',value:'94%',icon:'chart-line',color:'#f59e0b',bg:'rgba(245,158,11,0.12)',trend:'+7%',trendUp:true,sub:'AI optimized'},
+    {label:'Conflicts',value:3,icon:'triangle-exclamation',color:'#ef4444',bg:'rgba(239,68,68,0.12)',trend:'-5',trendUp:true,sub:'auto-resolved'},
+    {label:'Avg. Attendance',value:'90%',icon:'clipboard-check',color:'#34d399',bg:'rgba(52,211,153,0.12)',trend:'+3%',trendUp:true,sub:'this month'},
+    {label:'AI Score',value:'9.4',icon:'brain',color:'#818cf8',bg:'rgba(129,140,248,0.12)',trend:'↑0.3',trendUp:true,sub:'optimization index'},
+  ];
+  const el=document.getElementById('stat-cards');
+  el.innerHTML=cards.map(c=>`
+    <div class="card stat-card card-hover" style="padding:18px;cursor:pointer" onclick="navigateTo('analytics')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+        <div style="width:38px;height:38px;border-radius:10px;background:${c.bg};display:flex;align-items:center;justify-content:center">
+          <i class="fa fa-${c.icon}" style="color:${c.color};font-size:15px"></i>
+        </div>
+        <span style="font-size:11px;font-weight:600;color:${c.trendUp?'#34d399':'#fb7185'}">${c.trendUp?'↑':'↓'} ${c.trend}</span>
+      </div>
+      <div style="font-size:26px;font-weight:800;color:#f1f5f9;font-family:'Syne',sans-serif;margin-bottom:2px" class="stat-num" data-target="${c.value}">${c.value}</div>
+      <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:2px">${c.label}</div>
+      <div style="font-size:11px;color:#475569">${c.sub}</div>
+    </div>
+  `).join('');
+  animateCounters();
+}
+
+function animateCounters(){
+  document.querySelectorAll('.stat-num').forEach(el=>{
+    const target=el.dataset.target;
+    if(isNaN(parseFloat(target))) return;
+    const num=parseFloat(target);
+    const suffix=target.includes('%')?'%':target.includes('.')?'':'' ;
+    let current=0;
+    const step=num/40;
+    const timer=setInterval(()=>{
+      current=Math.min(current+step,num);
+      el.textContent=(Number.isInteger(num)?Math.floor(current):current.toFixed(1))+suffix;
+      if(current>=num) clearInterval(timer);
+    },30);
+  });
+}
+
+function initActivityFeed(){
+  const events=[
+    {icon:'calendar-days',color:'#6366f1',text:'AI generated timetable for Sem VII CSE',time:'2m'},
+    {icon:'clipboard-check',color:'#34d399',text:'Attendance marked for OS lecture — Room 101A',time:'8m'},
+    {icon:'triangle-exclamation',color:'#fbbf24',text:'Conflict detected: 2 faculty assigned same slot',time:'12m'},
+    {icon:'wand-magic-sparkles',color:'#a855f7',text:'AI resolved scheduling conflict automatically',time:'14m'},
+    {icon:'user-plus',color:'#06b6d4',text:'New student Priya Sharma enrolled in CSE Sem III',time:'22m'},
+    {icon:'door-open',color:'#818cf8',text:'Room 202 moved to maintenance mode',time:'35m'},
+    {icon:'file-pen',color:'#c084fc',text:'Exam schedule updated for November session',time:'1h'},
+    {icon:'bell',color:'#fb7185',text:'Low attendance alert sent to 15 students',time:'2h'},
+  ];
+  document.getElementById('activity-feed').innerHTML=events.map(e=>`
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="width:28px;height:28px;border-radius:8px;background:${e.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+        <i class="fa fa-${e.icon}" style="color:${e.color};font-size:11px"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;color:#94a3b8;line-height:1.4">${e.text}</div>
+        <div style="font-size:10px;color:#3f4960;margin-top:2px">${e.time} ago</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function initAIInsights(){
+  const insights=[
+    {icon:'lightbulb',color:'#f59e0b',text:'Schedule 2 free periods on Friday to reduce faculty overload',priority:'High'},
+    {icon:'arrows-rotate',color:'#6366f1',text:'Swap Dr. Sharma\'s Tuesday/Thursday slots for better room utilization',priority:'Medium'},
+    {icon:'chart-line',color:'#34d399',text:'Attendance trending up 3% after sending automated reminders',priority:'Low'},
+    {icon:'brain',color:'#a855f7',text:'Predicted 91% exam pass rate based on current attendance data',priority:'Info'},
+  ];
+  document.getElementById('ai-insights').innerHTML=insights.map(i=>`
+    <div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);display:flex;align-items:flex-start;gap:10px">
+      <i class="fa fa-${i.icon}" style="color:${i.color};font-size:13px;margin-top:1px;flex-shrink:0"></i>
+      <div style="flex:1"><div style="font-size:12px;color:#94a3b8;line-height:1.4">${i.text}</div><div style="font-size:10px;color:#3f4960;margin-top:3px">${i.priority} Priority</div></div>
+    </div>
+  `).join('');
+}
+
+function initTodaySchedule(){
+  const items=[
+    {time:'8:00 AM',subject:'Data Structures',room:'101A',faculty:'Dr. R. Kumar'},
+    {time:'9:00 AM',subject:'Machine Learning',room:'L101',faculty:'Prof. A. Sharma'},
+    {time:'10:00 AM',subject:'DBMS',room:'102B',faculty:'Dr. S. Verma'},
+    {time:'11:00 AM',subject:'Computer Networks',room:'201',faculty:'Prof. P. Singh'},
+    {time:'2:00 PM',subject:'OS Lab',room:'CS Lab 1',faculty:'Dr. N. Gupta'},
+    {time:'3:00 PM',subject:'Software Engg.',room:'301',faculty:'Prof. M. Rao'},
+  ];
+  document.getElementById('todays-schedule').innerHTML=items.map((i,idx)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);border-left:3px solid ${SUBJECT_COLORS[idx%SUBJECT_COLORS.length]}">
+      <div style="flex-shrink:0;text-align:right;min-width:52px"><div style="font-size:10px;font-weight:700;color:#64748b">${i.time}</div></div>
+      <div><div style="font-size:12px;font-weight:600;color:#e2e8f0">${i.subject}</div><div style="font-size:10px;color:#475569">${i.room} · ${i.faculty}</div></div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════════════
+
+const CHART_DEFAULTS = {
+  color:'#64748b',
+  plugins:{legend:{labels:{color:'#64748b',font:{family:'DM Sans',size:11}}}},
+  scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}}}}
+};
+
+function initCharts(){
+  // Activity chart
+  const actCtx=document.getElementById('activityChart').getContext('2d');
+  const actGrad=actCtx.createLinearGradient(0,0,0,240);
+  actGrad.addColorStop(0,'rgba(99,102,241,0.3)');
+  actGrad.addColorStop(1,'rgba(99,102,241,0)');
+  const actGrad2=actCtx.createLinearGradient(0,0,0,240);
+  actGrad2.addColorStop(0,'rgba(6,182,212,0.2)');
+  actGrad2.addColorStop(1,'rgba(6,182,212,0)');
+  new Chart(actCtx,{type:'line',data:{
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat'],
+    datasets:[
+      {label:'Scheduled',data:[45,52,49,58,44,20],borderColor:'#6366f1',backgroundColor:actGrad,borderWidth:2,tension:.4,fill:true,pointBackgroundColor:'#6366f1',pointRadius:4},
+      {label:'Attended',data:[40,48,44,53,41,18],borderColor:'#06b6d4',backgroundColor:actGrad2,borderWidth:2,tension:.4,fill:true,pointBackgroundColor:'#06b6d4',pointRadius:4}
+    ]
+  },options:{...CHART_DEFAULTS,plugins:{...CHART_DEFAULTS.plugins,legend:{...CHART_DEFAULTS.plugins.legend,position:'top'}},scales:CHART_DEFAULTS.scales,responsive:true,maintainAspectRatio:false}});
+  
+  // Dept chart (doughnut)
+  new Chart(document.getElementById('deptChart').getContext('2d'),{type:'doughnut',data:{
+    labels:['CSE','ECE','ME','CE','Math'],
+    datasets:[{data:[280,180,160,120,107],backgroundColor:['#6366f1','#06b6d4','#a855f7','#10b981','#f59e0b'],borderWidth:0,hoverOffset:8}]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#64748b',font:{family:'DM Sans',size:11},padding:12,boxWidth:10}}},cutout:'70%'}});
+  
+  // Room chart
+  new Chart(document.getElementById('roomChart').getContext('2d'),{type:'bar',data:{
+    labels:['Smart Class','Labs','Seminar','Conference'],
+    datasets:[{label:'Utilization %',data:[87,78,45,55],backgroundColor:['rgba(99,102,241,0.7)','rgba(6,182,212,0.7)','rgba(168,85,247,0.7)','rgba(16,185,129,0.7)'],borderRadius:6,borderSkipped:false}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}},max:100}}}});
+  
+  // Workload chart
+  new Chart(document.getElementById('workloadChart').getContext('2d'),{type:'bar',data:{
+    labels:FACULTY.slice(0,8).map(f=>f.name.split(' ').slice(-1)[0]),
+    datasets:[{label:'Hrs/Week',data:FACULTY.slice(0,8).map(f=>f.workload),backgroundColor:FACULTY.slice(0,8).map(f=>f.workload>20?'rgba(239,68,68,0.7)':f.workload>18?'rgba(245,158,11,0.7)':'rgba(16,185,129,0.7)'),borderRadius:4,borderSkipped:false}]
+  },options:{...CHART_DEFAULTS,indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}},max:25},y:{grid:{display:false},ticks:{color:'#475569',font:{family:'DM Sans',size:11}}}}}});
+}
+
+function updateActivityChart(range){
+  showToast(`Showing ${range} data`,'info',2000);
+}
+
+function initAnalyticsCharts(){
+  // Heatmap
+  const hg=document.getElementById('heatmap-grid');
+  const days=['M','T','W','T','F','S','S'];
+  hg.innerHTML='';
+  // Headers
+  days.forEach(d=>{hg.innerHTML+=`<div style="text-align:center;font-size:10px;color:#475569;padding:2px;font-weight:600">${d}</div>`});
+  for(let week=0;week<8;week++){
+    for(let day=0;day<7;day++){
+      const v=Math.random();
+      const opacity=v.toFixed(2);
+      const div=document.createElement('div');
+      div.className='heatmap-cell';
+      div.style.cssText=`height:14px;background:rgba(99,102,241,${opacity});`;
+      div.title=`${Math.floor(v*100)}% utilization`;
+      hg.appendChild(div);
+    }
+  }
+  
+  // Peak chart
+  const peakCtx=document.getElementById('peakChart').getContext('2d');
+  const peakGrad=peakCtx.createLinearGradient(0,0,0,200);
+  peakGrad.addColorStop(0,'rgba(168,85,247,0.5)');
+  peakGrad.addColorStop(1,'rgba(168,85,247,0)');
+  new Chart(peakCtx,{type:'line',data:{
+    labels:TIME_SLOTS,
+    datasets:[{label:'Room Usage',data:[12,28,45,52,48,10,42,56,38,15],borderColor:'#a855f7',backgroundColor:peakGrad,borderWidth:2,tension:.4,fill:true,pointBackgroundColor:'#a855f7',pointRadius:3}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  document.getElementById('peakChart').chart=true;
+  
+  // Efficiency chart
+  new Chart(document.getElementById('effChart').getContext('2d'),{type:'radar',data:{
+    labels:['Conflicts','Balance','Utilization','Preferences','Gaps'],
+    datasets:[{label:'Score',data:[97,89,91,85,92],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,0.15)',borderWidth:2,pointBackgroundColor:'#6366f1'}]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{angleLines:{color:'rgba(255,255,255,0.06)'},grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#475569',font:{family:'DM Sans',size:10},backdropColor:'transparent'},pointLabels:{color:'#64748b',font:{family:'DM Sans',size:10}},min:0,max:100}}}});
+  
+  // Dept attendance
+  new Chart(document.getElementById('deptAttChart').getContext('2d'),{type:'bar',data:{
+    labels:['CSE','ECE','ME','CE','Math'],
+    datasets:[{label:'Attendance %',data:[91,88,85,89,93],backgroundColor:['#6366f1','#06b6d4','#a855f7','#10b981','#f59e0b'],borderRadius:6,borderSkipped:false}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:10}},min:70,max:100}}}});
+  
+  // AI trend
+  const aiCtx=document.getElementById('aiTrendChart').getContext('2d');
+  const aiGrad=aiCtx.createLinearGradient(0,0,0,200);
+  aiGrad.addColorStop(0,'rgba(99,102,241,0.3)');
+  aiGrad.addColorStop(1,'rgba(99,102,241,0)');
+  new Chart(aiCtx,{type:'line',data:{
+    labels:['Aug','Sep','Oct','Nov'],
+    datasets:[{label:'Efficiency %',data:[78,84,89,94],borderColor:'#6366f1',backgroundColor:aiGrad,borderWidth:2,tension:.4,fill:true,pointBackgroundColor:'#6366f1',pointRadius:4}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+}
+
+function initAttendanceCharts(){
+  const attCtx=document.getElementById('attendanceChart').getContext('2d');
+  const attGrad=attCtx.createLinearGradient(0,0,0,240);
+  attGrad.addColorStop(0,'rgba(16,185,129,0.3)');
+  attGrad.addColorStop(1,'rgba(16,185,129,0)');
+  new Chart(attCtx,{type:'line',data:{
+    labels:['Jul','Aug','Sep','Oct','Nov'],
+    datasets:[{label:'Attendance %',data:[84,87,90,88,92],borderColor:'#10b981',backgroundColor:attGrad,borderWidth:2,tension:.4,fill:true,pointBackgroundColor:'#10b981',pointRadius:5}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{...CHART_DEFAULTS.scales,y:{...CHART_DEFAULTS.scales.y,min:70,max:100}}}});
+  document.getElementById('attendanceChart').chart=true;
+  
+  new Chart(document.getElementById('subjectAttChart').getContext('2d'),{type:'bar',data:{
+    labels:['DS','ML','DBMS','CN','OS','SE'],
+    datasets:[{label:'Attendance',data:[92,88,91,85,89,94],backgroundColor:['rgba(99,102,241,0.7)','rgba(6,182,212,0.7)','rgba(168,85,247,0.7)','rgba(245,158,11,0.7)','rgba(16,185,129,0.7)','rgba(239,68,68,0.7)'],borderRadius:4,borderSkipped:false}]
+  },options:{...CHART_DEFAULTS,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#475569',font:{family:'DM Sans',size:11}},min:70,max:100}}}});
+}
+
+function initFacultyCharts(){
+  new Chart(document.getElementById('facultyWorkChart').getContext('2d'),{type:'doughnut',data:{
+    labels:['< 16 hrs','16–18 hrs','19–21 hrs','> 21 hrs'],
+    datasets:[{data:[3,9,8,4],backgroundColor:['rgba(52,211,153,0.8)','rgba(99,102,241,0.8)','rgba(245,158,11,0.8)','rgba(239,68,68,0.8)'],borderWidth:0}]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#64748b',font:{family:'DM Sans',size:10},boxWidth:10,padding:10}}},cutout:'65%'}});
+  document.getElementById('facultyWorkChart').chart=true;
+  
+  // Dept stats
+  const deptData=[
+    {name:'CSE',count:8,avg:18.2,color:'#6366f1'},
+    {name:'ECE',count:5,avg:17.8,color:'#06b6d4'},
+    {name:'ME',count:5,avg:16.5,color:'#a855f7'},
+    {name:'CE',count:4,avg:15.9,color:'#10b981'},
+    {name:'Math',count:2,avg:14.0,color:'#f59e0b'},
+  ];
+  document.getElementById('dept-stats').innerHTML=deptData.map(d=>`
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${d.color};flex-shrink:0"></div>
+      <div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;color:#94a3b8">${d.name} (${d.count})</span><span style="font-size:12px;color:#64748b">${d.avg}h avg</span></div>
+      <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:99px"><div style="height:100%;width:${(d.avg/22)*100}%;background:${d.color};border-radius:99px"></div></div></div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TIMETABLE
+// ═══════════════════════════════════════════════════════════════════
+
+function initTimetable(){
+  const grid=document.getElementById('timetable-grid');
+  const slots=TIME_SLOTS.slice(0,8);
+  
+  let html=`<div style="display:grid;grid-template-columns:90px repeat(${DAYS.length},1fr);gap:2px;min-width:700px">`;
+  
+  // Header
+  html+=`<div style="padding:10px;font-size:11px;color:#3f4960;font-weight:600;text-align:center">TIME</div>`;
+  DAYS.forEach(d=>{ html+=`<div style="padding:10px;font-size:12px;font-weight:600;color:#94a3b8;text-align:center">${d.substring(0,3).toUpperCase()}</div>`; });
+  
+  // Rows
+  slots.forEach(slot=>{
+    html+=`<div class="tt-cell" style="padding:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);border-right:1px solid var(--border)">
+      <span style="font-size:10px;font-weight:600;color:#475569;white-space:nowrap">${slot}</span>
+    </div>`;
+    DAYS.forEach(day=>{
+      const block=TT_DATA[day]?.[slot];
+      if(block){
+        html+=`<div class="tt-cell" onclick="showLectureModal('${day}','${slot}')" style="padding:4px">
+          <div class="tt-block" style="background:${block.conflict?'rgba(239,68,68,0.2)':block.color+'22'};border-left:3px solid ${block.conflict?'#ef4444':block.color};border-radius:6px;height:100%;min-height:68px;padding:6px 8px">
+            ${block.conflict?'<div style="font-size:9px;font-weight:700;color:#fb7185;margin-bottom:2px">⚠ CONFLICT</div>':''}
+            <div style="font-size:11px;font-weight:600;color:#e2e8f0;line-height:1.2;margin-bottom:3px">${block.subject}</div>
+            <div style="font-size:9px;color:#94a3b8">${block.faculty.split(' ').slice(-1)[0]}</div>
+            <div style="font-size:9px;color:#64748b;margin-top:2px">${block.room}</div>
+          </div>
+        </div>`;
+      } else {
+        html+=`<div class="tt-cell" onclick="addLectureSlot('${day}','${slot}')" style="background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+          <i class="fa fa-plus" style="color:#3f4960;font-size:12px"></i>
+        </div>`;
+      }
+    });
+  });
+  
+  html+=`</div>`;
+  grid.innerHTML=html;
+}
+
+function filterTimetable(dept){
+  showToast(`Filtered for ${dept}`,'info',2000);
+}
+
+function showLectureModal(day,slot){
+  const block=TT_DATA[day]?.[slot];
+  if(!block) return;
+  showModal(`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="width:40px;height:40px;border-radius:10px;background:${block.color}22;display:flex;align-items:center;justify-content:center"><i class="fa fa-book-open" style="color:${block.color}"></i></div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9">${block.subject}</div><div style="font-size:12px;color:#64748b">${day} · ${slot}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;font-weight:600;margin-bottom:4px">FACULTY</div><div style="font-size:13px;color:#e2e8f0">${block.faculty}</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;font-weight:600;margin-bottom:4px">ROOM</div><div style="font-size:13px;color:#e2e8f0">${block.room}</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;font-weight:600;margin-bottom:4px">DEPARTMENT</div><div style="font-size:13px;color:#e2e8f0">${block.dept}</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;font-weight:600;margin-bottom:4px">STATUS</div><div style="font-size:13px;color:${block.conflict?'#fb7185':'#34d399'}">${block.conflict?'⚠ Conflict':'✓ Scheduled'}</div></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Close</button>
+      <button class="btn-primary" onclick="showToast('Class rescheduled','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-calendar-pen"></i> Reschedule</button>
+    </div>
+  `,'Lecture Details','460px');
+}
+
+function addLectureSlot(day,slot){
+  showToast(`Adding class for ${day} ${slot}`,'info');
+}
+
+function exportTimetable(){showToast('Timetable exported as PDF','success')}
+
+// ═══════════════════════════════════════════════════════════════════
+// AI SCHEDULER
+// ═══════════════════════════════════════════════════════════════════
+
+function runAIScheduler(){
+  const overlay=document.getElementById('ai-overlay');
+  overlay.style.display='flex';
+  
+  const steps=[
+    {msg:'Analyzing faculty availability and preferences...',step:'Parsing 24 faculty schedules'},
+    {msg:'Checking room capacities and equipment requirements...',step:'Processing 15 rooms'},
+    {msg:'Running constraint satisfaction algorithm...',step:'Evaluating 1,240 constraints'},
+    {msg:'Applying genetic algorithm for optimization...',step:'Generation 847 of 1000'},
+    {msg:'Resolving scheduling conflicts...',step:'Fixing 3 detected conflicts'},
+    {msg:'Validating final timetable structure...',step:'Running quality checks'},
+  ];
+  
+  let i=0;
+  const bar=document.getElementById('ai-progress');
+  const stepText=document.getElementById('ai-step-text');
+  const msgText=document.getElementById('ai-overlay-msg');
+  
+  bar.style.animation='none';
+  bar.style.width='0%';
+  
+  function nextStep(){
+    if(i>=steps.length){
+      overlay.style.display='none';
+      showToast('AI generated optimal timetable — 97% efficiency achieved! 🎉','success',5000);
+      addAILog('✓ Timetable generated successfully. Efficiency: 97%. Conflicts: 0.');
+      navigateTo('timetable');
+      return;
+    }
+    const s=steps[i];
+    msgText.textContent=s.msg;
+    stepText.textContent=s.step;
+    bar.style.width=((i+1)/steps.length*100)+'%';
+    bar.style.transition='width .8s ease';
+    i++;
+    setTimeout(nextStep,900);
+  }
+  nextStep();
+}
+
+function runAIOptimize(){
+  showToast('AI optimization running...','info',2000);
+  setTimeout(()=>showToast('Optimization complete — efficiency improved by 3%!','success'),2500);
+}
+
+// AI Chat
+let aiMessages = [];
+
+function initAIChat(){
+  aiMessages=[{role:'assistant',content:'Hello! I\'m your SmartClass AI Assistant. I can help you generate timetables, resolve conflicts, analyze attendance patterns, and optimize your academic schedule. What would you like to do today?'}];
+  renderAIChat();
+}
+
+function renderAIChat(){
+  const container=document.getElementById('ai-chat-msgs');
+  container.innerHTML=aiMessages.map(m=>`
+    <div class="ai-msg" style="display:flex;align-items:flex-start;gap:10px;${m.role==='user'?'flex-direction:row-reverse':''}">
+      <div style="width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;${m.role==='assistant'?'background:linear-gradient(135deg,#6366f1,#a855f7)':'background:rgba(255,255,255,0.08)'}">
+        <i class="fa fa-${m.role==='assistant'?'brain':'user'}" style="color:${m.role==='assistant'?'#fff':'#94a3b8'};font-size:11px"></i>
+      </div>
+      <div style="max-width:80%;padding:10px 14px;border-radius:${m.role==='assistant'?'4px 12px 12px 12px':'12px 4px 12px 12px'};background:${m.role==='assistant'?'rgba(99,102,241,0.12)':'rgba(255,255,255,0.06)'};border:1px solid ${m.role==='assistant'?'rgba(99,102,241,0.2)':'rgba(255,255,255,0.08)'}">
+        <div style="font-size:13px;color:#e2e8f0;line-height:1.5">${m.content}</div>
+      </div>
+    </div>
+  `).join('');
+  container.scrollTop=container.scrollHeight;
+}
+
+function sendAIMsg(){
+  const inp=document.getElementById('ai-chat-input');
+  const msg=inp.value.trim();
+  if(!msg) return;
+  aiMessages.push({role:'user',content:msg});
+  inp.value='';
+  renderAIChat();
+  
+  // Typing indicator
+  const container=document.getElementById('ai-chat-msgs');
+  const typing=document.createElement('div');
+  typing.className='ai-msg';
+  typing.id='ai-typing';
+  typing.style.cssText='display:flex;align-items:flex-start;gap:10px';
+  typing.innerHTML=`<div style="width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6366f1,#a855f7)"><i class="fa fa-brain" style="color:#fff;font-size:11px"></i></div><div style="padding:10px 14px;border-radius:4px 12px 12px 12px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.2)"><div style="display:flex;gap:4px;align-items:center;height:16px"><div style="width:6px;height:6px;border-radius:50%;background:#6366f1;animation:typing .8s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#6366f1;animation:typing .8s .2s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#6366f1;animation:typing .8s .4s infinite"></div></div></div>`;
+  container.appendChild(typing);
+  container.scrollTop=container.scrollHeight;
+  
+  setTimeout(()=>{
+    document.getElementById('ai-typing')?.remove();
+    const response=AI_RESPONSES[aiMsgIdx%AI_RESPONSES.length];
+    aiMsgIdx++;
+    aiMessages.push({role:'assistant',content:response});
+    renderAIChat();
+  },1500+Math.random()*1000);
+}
+
+function initAILog(){
+  const logItems=[
+    '[08:32:14] Neural engine initialized — v2.4.1',
+    '[08:32:15] Faculty data loaded: 24 faculty members',
+    '[08:32:15] Room data loaded: 15 rooms across 3 buildings',
+    '[08:32:16] Historical timetable patterns analyzed',
+    '[08:32:18] Constraint graph built: 1,240 constraints',
+    '[08:32:20] Optimization complete — efficiency: 94.2%',
+    '[08:32:21] 3 conflicts detected, auto-resolving...',
+    '[08:32:23] All conflicts resolved. Final score: 94.7%',
+  ];
+  document.getElementById('ai-log').innerHTML=logItems.map(l=>`<div style="color:${l.includes('✓')||l.includes('complete')?'#34d399':l.includes('conflict')?'#fbbf24':'#64748b'}">${l}</div>`).join('');
+}
+
+function addAILog(msg){
+  const log=document.getElementById('ai-log');
+  const time=new Date().toLocaleTimeString('en-IN',{hour12:false});
+  const div=document.createElement('div');
+  div.style.color='#34d399';
+  div.textContent=`[${time}] ${msg}`;
+  log.appendChild(div);
+  log.scrollTop=log.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLASSROOMS
+// ═══════════════════════════════════════════════════════════════════
+
+function initRooms(){
+  renderRooms(ROOMS);
+}
+
+function renderRooms(rooms){
+  document.getElementById('rooms-grid').innerHTML=rooms.map(r=>`
+    <div class="card card-hover" style="padding:0;overflow:hidden;cursor:pointer" onclick="showRoomDetail('${r.id}')">
+      <div style="height:6px;background:${r.status==='available'?'linear-gradient(90deg,#10b981,#34d399)':r.status==='occupied'?'linear-gradient(90deg,#6366f1,#818cf8)':'linear-gradient(90deg,#f59e0b,#fbbf24)'}"></div>
+      <div style="padding:18px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#f1f5f9;font-family:'Syne',sans-serif">${r.name}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">${r.type} · ${r.building}</div>
+          </div>
+          <span class="badge ${r.status==='available'?'badge-emerald':r.status==='occupied'?'badge-brand':'badge-amber'}">${r.status==='available'?'Available':r.status==='occupied'?'In Use':'Maintenance'}</span>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:14px">
+          <div style="text-align:center;flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><div style="font-size:16px;font-weight:700;color:#e2e8f0">${r.capacity}</div><div style="font-size:10px;color:#475569">Seats</div></div>
+          <div style="text-align:center;flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><div style="font-size:16px;font-weight:700;color:#e2e8f0">${r.floor}</div><div style="font-size:10px;color:#475569">Floor</div></div>
+          <div style="text-align:center;flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><div style="font-size:16px;font-weight:700;color:${r.utilization>85?'#fb7185':r.utilization>70?'#fbbf24':'#34d399'}">${r.utilization}%</div><div style="font-size:10px;color:#475569">Utilized</div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:99px">
+            <div style="height:100%;width:${r.utilization}%;background:${r.utilization>85?'#ef4444':r.utilization>70?'#f59e0b':'#10b981'};border-radius:99px;transition:width .8s ease"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${r.equipment.slice(0,3).map(e=>`<span class="badge badge-cyan" style="font-size:10px;padding:2px 7px">${e}</span>`).join('')}
+          ${r.equipment.length>3?`<span class="badge badge-brand" style="font-size:10px;padding:2px 7px">+${r.equipment.length-3}</span>`:''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRooms(type){
+  const filtered=type==='all'?ROOMS:ROOMS.filter(r=>r.type.toLowerCase().includes(type));
+  renderRooms(filtered);
+}
+
+function setRoomView(v){
+  const grid=document.getElementById('rooms-grid');
+  grid.style.gridTemplateColumns=v==='grid'?'repeat(auto-fill,minmax(280px,1fr))':'1fr';
+}
+
+function showAddRoomModal(){
+  showModal(`
+    <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:20px">Add New Room</h3>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Room Name</label><input type="text" class="inp" placeholder="e.g., Room 302A"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Type</label><select class="inp">${ROOM_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Capacity</label><input type="number" class="inp" placeholder="60"/></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Floor</label><input type="number" class="inp" placeholder="1"/></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Building</label><input type="text" class="inp" placeholder="Main Block"/></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn-primary" onclick="showToast('Room added successfully','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-plus"></i> Add Room</button>
+      </div>
+    </div>
+  `,'Add Room','460px');
+}
+
+function showRoomDetail(id){
+  const room=ROOMS.find(r=>r.id===id);
+  if(!room) return;
+  showModal(`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="width:48px;height:48px;border-radius:12px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;font-size:22px">🏫</div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#f1f5f9">${room.name}</div><div style="font-size:13px;color:#64748b">${room.type} · Floor ${room.floor} · ${room.building}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="text-align:center;padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:22px;font-weight:700;color:#e2e8f0">${room.capacity}</div><div style="font-size:11px;color:#64748b">Capacity</div></div>
+      <div style="text-align:center;padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:22px;font-weight:700;color:${room.utilization>85?'#fb7185':'#34d399'}">${room.utilization}%</div><div style="font-size:11px;color:#64748b">Utilized</div></div>
+      <div style="text-align:center;padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:22px;font-weight:700;color:${room.status==='available'?'#34d399':room.status==='occupied'?'#818cf8':'#fbbf24'}">${room.status==='available'?'Free':room.status==='occupied'?'Busy':'Maint.'}</div><div style="font-size:11px;color:#64748b">Status</div></div>
+    </div>
+    <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px">Equipment</div><div style="display:flex;flex-wrap:wrap;gap:6px">${room.equipment.map(e=>`<span class="badge badge-cyan">${e}</span>`).join('')}</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Close</button>
+      <button class="btn-primary" onclick="showToast('Room booked for next slot','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-calendar-check"></i> Book Room</button>
+    </div>
+  `,'Room Details','460px');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FACULTY
+// ═══════════════════════════════════════════════════════════════════
+
+function initFaculty(){
+  renderFacultyTable(FACULTY);
+}
+
+function renderFacultyTable(data){
+  document.getElementById('faculty-tbody').innerHTML=data.slice(0,10).map(f=>`
+    <tr style="cursor:pointer" onclick="showFacultyModal('${f.id}')">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:9px;background:${f.avatar};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span style="font-size:12px;font-weight:700;color:#fff">${initials(f.name)}</span>
+          </div>
+          <div><div style="font-size:13px;font-weight:600;color:#e2e8f0">${f.name}</div><div style="font-size:11px;color:#64748b">${f.email}</div></div>
+        </div>
+      </td>
+      <td><span style="font-size:12px;color:#94a3b8">${f.dept.split(' ')[0]}</span></td>
+      <td><span style="font-size:12px;color:#64748b">${f.subjects.slice(0,2).join(', ')}${f.subjects.length>2?` +${f.subjects.length-2}`:''}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:48px;height:4px;border-radius:99px;background:rgba(255,255,255,0.08)"><div style="height:100%;width:${(f.workload/25)*100}%;background:${f.workload>20?'#ef4444':f.workload>18?'#f59e0b':'#10b981'};border-radius:99px"></div></div>
+          <span style="font-size:12px;color:${f.workload>20?'#fb7185':f.workload>18?'#fbbf24':'#34d399'};font-weight:600">${f.workload}h</span>
+        </div>
+      </td>
+      <td><span class="badge ${f.status==='Active'?'badge-emerald':'badge-amber'}">${f.status}</span></td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button onclick="event.stopPropagation();showToast('Viewing ${f.name}\'s profile','info')" style="width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center" title="View"><i class="fa fa-eye" style="font-size:11px"></i></button>
+          <button onclick="event.stopPropagation();showToast('Edit mode for ${f.name}','info')" style="width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center" title="Edit"><i class="fa fa-pen" style="font-size:11px"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function searchFaculty(q){
+  const filtered=FACULTY.filter(f=>f.name.toLowerCase().includes(q.toLowerCase())||f.dept.toLowerCase().includes(q.toLowerCase()));
+  renderFacultyTable(filtered);
+}
+
+function showAddFacultyModal(){
+  showModal(`
+    <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:20px">Add Faculty Member</h3>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">First Name</label><input type="text" class="inp" placeholder="Anita"/></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Last Name</label><input type="text" class="inp" placeholder="Sharma"/></div>
+      </div>
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Email</label><input type="email" class="inp" placeholder="anita.sharma@college.edu"/></div>
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Department</label><select class="inp">${DEPARTMENTS.map(d=>`<option>${d}</option>`).join('')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Experience (years)</label><input type="number" class="inp" placeholder="5"/></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Max Workload (hrs)</label><input type="number" class="inp" placeholder="20"/></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn-primary" onclick="showToast('Faculty added successfully','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-user-plus"></i> Add Faculty</button>
+      </div>
+    </div>
+  `,'Add Faculty','480px');
+}
+
+function showFacultyModal(id){
+  const f=FACULTY.find(x=>x.id===id);
+  if(!f) return;
+  showModal(`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:56px;height:56px;border-radius:14px;background:${f.avatar};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff">${initials(f.name)}</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#f1f5f9">${f.name}</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">${f.dept}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <span class="badge ${f.status==='Active'?'badge-emerald':'badge-amber'}">${f.status}</span>
+          <span style="font-size:12px;color:#64748b">⭐ ${f.rating}</span>
+          <span style="font-size:12px;color:#64748b">${f.experience} yrs exp</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;margin-bottom:4px">EMAIL</div><div style="font-size:12px;color:#94a3b8">${f.email}</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)"><div style="font-size:10px;color:#475569;margin-bottom:4px">WORKLOAD</div><div style="font-size:12px;color:${f.workload>20?'#fb7185':'#34d399'};font-weight:600">${f.workload} hrs/week</div></div>
+    </div>
+    <div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px">Subjects Teaching</div><div style="display:flex;flex-wrap:wrap;gap:6px">${f.subjects.map(s=>`<span class="badge badge-brand">${s}</span>`).join('')}</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Close</button>
+      <button class="btn-primary" onclick="showToast('Schedule generated for ${f.name}','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-calendar"></i> View Schedule</button>
+    </div>
+  `,'Faculty Profile','480px');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STUDENTS
+// ═══════════════════════════════════════════════════════════════════
+
+let studentPage=0;
+const STUDENTS_PER_PAGE=12;
+
+function initStudents(){
+  renderStudents(0);
+}
+
+function renderStudents(page){
+  studentPage=page;
+  const start=page*STUDENTS_PER_PAGE;
+  const data=STUDENTS.slice(start,start+STUDENTS_PER_PAGE);
+  document.getElementById('students-grid').innerHTML=data.map(s=>`
+    <div class="card card-hover" style="padding:18px;cursor:pointer" onclick="showStudentProfile('${s.id}')">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:${s.avatar};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="font-size:16px;font-weight:700;color:#fff">${initials(s.name)}</span>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#f1f5f9">${s.name}</div>
+          <div style="font-size:11px;color:#64748b">${s.rollNo}</div>
+        </div>
+        <span class="badge ${s.status==='Good'?'badge-emerald':s.status==='Warning'?'badge-amber':'badge-rose'}" style="margin-left:auto">${s.status}</span>
+      </div>
+      <div style="font-size:11px;color:#64748b;margin-bottom:12px">${s.dept.split(' ').slice(0,2).join(' ')} · Sem ${s.sem}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="text-align:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)">
+          <div style="font-size:16px;font-weight:700;color:${s.attendance<75?'#fb7185':s.attendance<85?'#fbbf24':'#34d399'}">${s.attendance}%</div>
+          <div style="font-size:10px;color:#475569">Attendance</div>
+        </div>
+        <div style="text-align:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)">
+          <div style="font-size:16px;font-weight:700;color:#818cf8">${s.gpa}</div>
+          <div style="font-size:10px;color:#475569">CGPA</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  // Pager
+  const totalPages=Math.ceil(STUDENTS.length/STUDENTS_PER_PAGE);
+  document.getElementById('students-pager').innerHTML=`
+    <button onclick="renderStudents(${page-1})" ${page===0?'disabled':''} class="btn-secondary" style="padding:6px 14px;font-size:12px;opacity:${page===0?0.4:1}">← Prev</button>
+    <span style="font-size:12px;color:#64748b;padding:0 12px">${page+1} / ${totalPages}</span>
+    <button onclick="renderStudents(${page+1})" ${page>=totalPages-1?'disabled':''} class="btn-primary" style="padding:6px 14px;font-size:12px;opacity:${page>=totalPages-1?0.4:1}">Next →</button>
+  `;
+}
+
+function searchStudents(q){
+  const filtered=STUDENTS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.rollNo.toLowerCase().includes(q.toLowerCase()));
+  const el=document.getElementById('students-grid');
+  el.innerHTML=filtered.slice(0,12).map(s=>`
+    <div class="card card-hover" style="padding:18px;cursor:pointer" onclick="showStudentProfile('${s.id}')">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:44px;height:44px;border-radius:12px;background:${s.avatar};display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px;font-weight:700;color:#fff">${initials(s.name)}</span></div>
+        <div><div style="font-size:14px;font-weight:600;color:#f1f5f9">${s.name}</div><div style="font-size:11px;color:#64748b">${s.rollNo}</div></div>
+        <span class="badge ${s.status==='Good'?'badge-emerald':s.status==='Warning'?'badge-amber':'badge-rose'}" style="margin-left:auto">${s.status}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="text-align:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><div style="font-size:16px;font-weight:700;color:${s.attendance<75?'#fb7185':'#34d399'}">${s.attendance}%</div><div style="font-size:10px;color:#475569">Attendance</div></div>
+        <div style="text-align:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><div style="font-size:16px;font-weight:700;color:#818cf8">${s.gpa}</div><div style="font-size:10px;color:#475569">CGPA</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showStudentProfile(id){
+  const s=STUDENTS.find(x=>x.id===id);
+  if(!s) return;
+  showModal(`
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:60px;height:60px;border-radius:16px;background:${s.avatar};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff">${initials(s.name)}</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#f1f5f9">${s.name}</div>
+        <div style="font-size:12px;color:#64748b;margin-top:2px">${s.rollNo} · ${s.dept.split(' ').slice(0,2).join(' ')}</div>
+        <div style="margin-top:6px"><span class="badge ${s.status==='Good'?'badge-emerald':s.status==='Warning'?'badge-amber':'badge-rose'}">${s.status}</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);text-align:center"><div style="font-size:20px;font-weight:700;color:${s.attendance<75?'#fb7185':'#34d399'}">${s.attendance}%</div><div style="font-size:11px;color:#64748b">Attendance</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);text-align:center"><div style="font-size:20px;font-weight:700;color:#818cf8">${s.gpa}</div><div style="font-size:11px;color:#64748b">CGPA</div></div>
+      <div style="padding:12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);text-align:center"><div style="font-size:20px;font-weight:700;color:#e2e8f0">Sem ${s.sem}</div><div style="font-size:11px;color:#64748b">Current</div></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px">Enrolled Subjects</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${(s.subjects||['Data Structures','Algorithms','DBMS']).map(sub=>`<span class="badge badge-brand">${sub}</span>`).join('')}</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Close</button>
+      <button class="btn-primary" onclick="showToast('Timetable shared with ${s.name}','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-paper-plane"></i> Send Timetable</button>
+    </div>
+  `,'Student Profile','480px');
+}
+
+function showAddStudentModal(){
+  showModal(`
+    <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:20px">Enroll New Student</h3>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Full Name</label><input type="text" class="inp" placeholder="Arjun Mehta"/></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Roll Number</label><input type="text" class="inp" placeholder="CS7001"/></div>
+      </div>
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Email</label><input type="email" class="inp" placeholder="student@college.edu"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Department</label><select class="inp">${DEPARTMENTS.map(d=>`<option>${d}</option>`).join('')}</select></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Semester</label><select class="inp"><option>1</option><option>3</option><option>5</option><option>7</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn-primary" onclick="showToast('Student enrolled successfully','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-graduation-cap"></i> Enroll</button>
+      </div>
+    </div>
+  `,'Enroll Student','480px');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ATTENDANCE
+// ═══════════════════════════════════════════════════════════════════
+
+function initDefaulters(){
+  const defaulters=STUDENTS.filter(s=>s.attendance<75).slice(0,10);
+  document.getElementById('defaulters-tbody').innerHTML=defaulters.map(s=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;background:${s.avatar};display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:11px;font-weight:700;color:#fff">${initials(s.name)}</span></div><span style="font-size:13px;color:#e2e8f0">${s.name}</span></div></td>
+      <td><span class="badge badge-brand" style="font-size:11px">${s.rollNo}</span></td>
+      <td><span style="font-size:12px;color:#64748b">${s.dept.split(' ')[0]}</span></td>
+      <td><span style="font-size:13px;font-weight:700;color:#fb7185">${s.attendance}%</span></td>
+      <td><span style="font-size:13px;color:#fbbf24">${Math.floor((100-s.attendance)*0.5)} days</span></td>
+      <td><button onclick="showToast('Warning sent to ${s.name}','warning')" class="btn-secondary" style="padding:5px 12px;font-size:11px"><i class="fa fa-bell"></i> Alert</button></td>
+    </tr>
+  `).join('');
+}
+
+function showQRModal(){
+  showModal(`
+    <div style="text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:20px">QR Attendance Code</div>
+      <div style="width:180px;height:180px;margin:0 auto 20px;padding:16px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center">
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:148px;height:148px">
+          ${Array.from({length:100},(_,i)=>`<div style="background:${Math.random()>0.5?'#000':'#fff'};border-radius:1px"></div>`).join('')}
+        </div>
+      </div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:8px">Scan to mark attendance for</div>
+      <div style="font-size:15px;font-weight:600;color:#e2e8f0">Data Structures — Room 101A</div>
+      <div style="font-size:12px;color:#6366f1;margin-top:4px">Valid for 5 minutes</div>
+      <button class="btn-primary" onclick="showToast('New QR generated','success')" style="margin-top:20px;width:100%;justify-content:center"><i class="fa fa-rotate"></i> Regenerate QR</button>
+    </div>
+  `,'QR Attendance','340px');
+}
+
+function markAttendance(){
+  showToast('Attendance marked for current class','success');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EXAMS
+// ═══════════════════════════════════════════════════════════════════
+
+function initExams(){
+  document.getElementById('exam-list').innerHTML=EXAMS.map((e,i)=>`
+    <div style="padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-left:3px solid ${SUBJECT_COLORS[i%SUBJECT_COLORS.length]}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:600;color:#e2e8f0">${e.subject}</div>
+        <span class="badge badge-brand" style="font-size:10px">${e.dept}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <span style="font-size:11px;color:#64748b"><i class="fa fa-calendar" style="color:#6366f1;margin-right:4px"></i>${e.date}</span>
+        <span style="font-size:11px;color:#64748b"><i class="fa fa-clock" style="color:#06b6d4;margin-right:4px"></i>${e.time} · ${e.duration}</span>
+        <span style="font-size:11px;color:#64748b"><i class="fa fa-building" style="color:#a855f7;margin-right:4px"></i>${e.hall}</span>
+        <span style="font-size:11px;color:#64748b"><i class="fa fa-users" style="color:#10b981;margin-right:4px"></i>${e.students} students</span>
+      </div>
+    </div>
+  `).join('');
+  
+  document.getElementById('hall-allocation').innerHTML=ROOMS.filter(r=>['Seminar Hall','Smart Classroom'].includes(r.type)).slice(0,5).map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid var(--border)">
+      <i class="fa fa-building" style="color:#6366f1;font-size:14px"></i>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600;color:#e2e8f0">${r.name}</div><div style="font-size:11px;color:#64748b">Capacity: ${r.capacity} · ${i<3?'Exam '+['I','II','III'][i]:'Overflow'}</div></div>
+      <span class="badge ${i<3?'badge-brand':'badge-amber'}">${i<3?'Allocated':'Standby'}</span>
+    </div>
+  `).join('');
+}
+
+function initSeatingMatrix(){
+  const sm=document.getElementById('seating-matrix');
+  sm.innerHTML='';
+  for(let i=0;i<60;i++){
+    const taken=Math.random()>0.12;
+    const inv=i===0||i===29;
+    const div=document.createElement('div');
+    div.style.cssText=`height:24px;border-radius:4px;cursor:pointer;transition:all .2s;background:${inv?'rgba(245,158,11,0.4)':taken?'rgba(99,102,241,0.5)':'rgba(255,255,255,0.04)'};border:1px solid ${inv?'rgba(245,158,11,0.3)':taken?'rgba(99,102,241,0.3)':'var(--border)'};font-size:9px;color:${taken?'#818cf8':'#3f4960'};display:flex;align-items:center;justify-content:center`;
+    div.textContent=taken?(Math.floor(Math.random()*999)+1).toString().slice(0,2):'';
+    div.title=taken?`Roll: CS7${String(i+1).padStart(3,'0')}`:'Empty';
+    div.onmouseover=()=>{if(!taken&&!inv)div.style.background='rgba(99,102,241,0.15)'};
+    div.onmouseout=()=>{if(!taken&&!inv)div.style.background='rgba(255,255,255,0.04)'};
+    sm.appendChild(div);
+  }
+}
+
+function showAddExamModal(){
+  showModal(`
+    <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:20px">Schedule New Exam</h3>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Subject</label><input type="text" class="inp" placeholder="Data Structures & Algorithms"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Date</label><input type="date" class="inp"/></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Time</label><input type="time" class="inp"/></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Hall</label><select class="inp">${ROOMS.filter(r=>r.capacity>=60).map(r=>`<option>${r.name} (${r.capacity})</option>`).join('')}</select></div>
+        <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Duration</label><select class="inp"><option>2 hrs</option><option>3 hrs</option></select></div>
+      </div>
+      <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Invigilator</label><select class="inp">${FACULTY.slice(0,8).map(f=>`<option>${f.name}</option>`).join('')}</select></div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-secondary" onclick="closeModal()" style="flex:1;justify-content:center">Cancel</button>
+        <button class="btn-primary" onclick="showToast('Exam scheduled successfully','success');closeModal()" style="flex:1;justify-content:center"><i class="fa fa-calendar-check"></i> Schedule</button>
+      </div>
+    </div>
+  `,'Schedule Exam','480px');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════════
+
+function initNotifications(){
+  renderNotifications(NOTIFICATIONS);
+}
+
+function renderNotifications(data){
+  document.getElementById('notifs-list').innerHTML=data.map(n=>`
+    <div style="display:flex;align-items:flex-start;gap:14px;padding:16px;border-radius:12px;background:${n.read?'rgba(255,255,255,0.01)':'rgba(99,102,241,0.06)'};border:1px solid ${n.read?'var(--border)':'rgba(99,102,241,0.15)'};transition:all .2s;cursor:pointer" onclick="markRead(${n.id})">
+      <div style="width:36px;height:36px;border-radius:10px;background:${n.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="fa fa-${n.icon}" style="color:${n.color};font-size:14px"></i>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="font-size:14px;font-weight:600;color:#e2e8f0">${n.title}</div>
+          ${!n.read?'<div style="width:6px;height:6px;border-radius:50%;background:#6366f1;flex-shrink:0"></div>':''}
+          <div style="font-size:11px;color:#475569;margin-left:auto">${n.time}</div>
+        </div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.5">${n.msg}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterNotifs(type){
+  ['all','schedule','attendance','exam'].forEach(t=>{
+    const btn=document.getElementById(`notif-tab-${t}`);
+    if(btn){btn.style.background=t===type?'#6366f1':'transparent';btn.style.color=t===type?'#fff':'#64748b';}
+  });
+  const filtered=type==='all'?NOTIFICATIONS:NOTIFICATIONS.filter(n=>n.type===type);
+  renderNotifications(filtered);
+}
+
+function markRead(id){
+  const n=NOTIFICATIONS.find(x=>x.id===id);
+  if(n){n.read=true;renderNotifications(NOTIFICATIONS);}
+}
+
+function markAllRead(){
+  NOTIFICATIONS.forEach(n=>n.read=true);
+  renderNotifications(NOTIFICATIONS);
+  document.getElementById('notif-badge').style.display='none';
+  showToast('All notifications marked as read','success');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════════════════════════════
+
+function initReports(){
+  const reports=[
+    {title:'Timetable Report',desc:'Complete schedule for all departments',icon:'calendar-days',color:'#6366f1',size:'2.4 MB',date:'Nov 8, 2025'},
+    {title:'Attendance Summary',desc:'Monthly attendance by student and subject',icon:'clipboard-check',color:'#10b981',size:'1.8 MB',date:'Nov 7, 2025'},
+    {title:'Faculty Workload',desc:'Weekly hours and subject distribution',icon:'chalkboard-user',color:'#06b6d4',size:'0.9 MB',date:'Nov 6, 2025'},
+    {title:'Room Utilization',desc:'Occupancy rates and efficiency metrics',icon:'school',color:'#a855f7',size:'1.2 MB',date:'Nov 5, 2025'},
+    {title:'Exam Schedule',desc:'End semester exam dates, halls, invigilators',icon:'file-pen',color:'#f59e0b',size:'0.7 MB',date:'Nov 4, 2025'},
+    {title:'AI Optimization',desc:'AI performance and timetable improvements',icon:'brain',color:'#ec4899',size:'1.1 MB',date:'Nov 3, 2025'},
+    {title:'Student Performance',desc:'CGPA distribution and academic analytics',icon:'graduation-cap',color:'#34d399',size:'3.2 MB',date:'Nov 2, 2025'},
+    {title:'Department Analytics',desc:'Cross-department performance comparison',icon:'chart-mixed',color:'#818cf8',size:'1.6 MB',date:'Nov 1, 2025'},
+  ];
+  document.getElementById('reports-grid').innerHTML=reports.map(r=>`
+    <div class="card card-hover" style="padding:20px;cursor:pointer" onclick="showToast('Downloading ${r.title}...','info')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${r.color}18;display:flex;align-items:center;justify-content:center">
+          <i class="fa fa-${r.icon}" style="color:${r.color};font-size:16px"></i>
+        </div>
+        <button onclick="event.stopPropagation();showToast('${r.title} downloaded','success')" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center"><i class="fa fa-download" style="font-size:11px"></i></button>
+      </div>
+      <div style="font-size:14px;font-weight:600;color:#f1f5f9;margin-bottom:4px">${r.title}</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">${r.desc}</div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-size:11px;color:#475569">${r.size}</span>
+        <span style="font-size:11px;color:#475569">${r.date}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════════
+
+function initSettingsContent(){
+  showSettingsTab('general');
+}
+
+function showSettingsTab(tab){
+  document.querySelectorAll('#settings-nav .nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`stab-${tab}`)?.classList.add('active');
+  
+  const content={
+    general:`
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">General Preferences</div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">Dark Mode</div><div style="font-size:12px;color:#64748b">Use dark color scheme throughout</div></div>
+              <label class="toggle"><input type="checkbox" checked onchange="showToast('Theme preference saved','success')"/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">Compact Sidebar</div><div style="font-size:12px;color:#64748b">Show only icons in sidebar</div></div>
+              <label class="toggle"><input type="checkbox" onchange="toggleSidebar()"/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">AI Auto-Optimize</div><div style="font-size:12px;color:#64748b">Let AI automatically fix conflicts</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">Animations</div><div style="font-size:12px;color:#64748b">Enable UI transitions and animations</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">Institution Info</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Institution Name</label><input type="text" class="inp" value="ABES Engineering College"/></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Academic Year</label><input type="text" class="inp" value="2024–2025"/></div>
+              <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Current Semester</label><select class="inp"><option>Odd Semester</option><option>Even Semester</option></select></div>
+            </div>
+            <button class="btn-primary" onclick="showToast('Settings saved','success')"><i class="fa fa-save"></i> Save Changes</button>
+          </div>
+        </div>
+      </div>
+    `,
+    notifications:`
+      <div class="card" style="padding:24px">
+        <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">Notification Preferences</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          ${[
+            {label:'Timetable Changes',desc:'Get notified when schedule is updated',checked:true},
+            {label:'Attendance Alerts',desc:'Alerts for defaulters and low attendance',checked:true},
+            {label:'Room Changes',desc:'When room allocation changes',checked:true},
+            {label:'Exam Reminders',desc:'Upcoming exam notifications',checked:true},
+            {label:'Faculty Substitutions',desc:'When a substitute is assigned',checked:false},
+            {label:'AI Insights',desc:'AI optimization recommendations',checked:true},
+            {label:'Email Notifications',desc:'Send notifications via email',checked:false},
+            {label:'Push Notifications',desc:'Browser push notifications',checked:true},
+          ].map(n=>`
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">${n.label}</div><div style="font-size:12px;color:#64748b">${n.desc}</div></div>
+              <label class="toggle"><input type="checkbox" ${n.checked?'checked':''} onchange="showToast('Preference saved','success')"/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+          `).join('').replace(/<div[^>]*><\/div>\s*$/,'')}
+        </div>
+      </div>
+    `,
+    academic:`
+      <div class="card" style="padding:24px">
+        <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">Academic Settings</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Working Days</label><select class="inp"><option>Monday–Saturday</option><option>Monday–Friday</option></select></div>
+            <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Class Duration</label><select class="inp"><option>60 minutes</option><option>50 minutes</option><option>45 minutes</option></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Day Start Time</label><input type="time" class="inp" value="08:00"/></div>
+            <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Day End Time</label><input type="time" class="inp" value="17:00"/></div>
+          </div>
+          <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Minimum Attendance Threshold (%)</label><input type="number" class="inp" value="75" min="0" max="100"/></div>
+          <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Max Faculty Hours per Week</label><input type="number" class="inp" value="22"/></div>
+          <button class="btn-primary" onclick="showToast('Academic settings saved','success')"><i class="fa fa-save"></i> Save Settings</button>
+        </div>
+      </div>
+    `,
+    users:`
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0">User Management</div>
+          <button class="btn-primary" style="padding:7px 16px;font-size:12px" onclick="showToast('Invite sent','success')"><i class="fa fa-user-plus"></i> Invite User</button>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>User</th><th>Role</th><th>Last Active</th><th>Status</th></tr></thead>
+          <tbody>
+            ${[
+              {name:'Dr. Rajesh Kumar',email:'admin@smartclass.edu',role:'Admin',active:'2 min ago',status:'Active'},
+              {name:'Prof. Anita Sharma',email:'anita@abes.edu',role:'Faculty',active:'1 hr ago',status:'Active'},
+              {name:'Prof. Suresh Yadav',email:'suresh@abes.edu',role:'Faculty',active:'3 hrs ago',status:'Active'},
+              {name:'Arjun Mehta',email:'arjun@student.abes.edu',role:'Student',active:'5 hrs ago',status:'Active'},
+              {name:'Dr. Priya Verma',email:'priya@abes.edu',role:'HOD',active:'1 day ago',status:'Away'},
+            ].map(u=>`
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:11px;font-weight:700;color:#fff">${initials(u.name)}</span></div><div><div style="font-size:13px;color:#e2e8f0">${u.name}</div><div style="font-size:11px;color:#64748b">${u.email}</div></div></div></td>
+                <td><span class="badge ${u.role==='Admin'?'badge-rose':u.role==='HOD'?'badge-purple':u.role==='Faculty'?'badge-brand':'badge-emerald'}">${u.role}</span></td>
+                <td><span style="font-size:12px;color:#64748b">${u.active}</span></td>
+                <td><span class="badge ${u.status==='Active'?'badge-emerald':'badge-amber'}">${u.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `,
+    security:`
+      <div class="card" style="padding:24px">
+        <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">Security Settings</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">Two-Factor Authentication</div><div style="font-size:12px;color:#64748b">Add extra security to your account</div></div>
+            <label class="toggle"><input type="checkbox" onchange="showToast('2FA setting updated','success')"/><span class="toggle-slider"></span></label>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:13px;font-weight:500;color:#e2e8f0">Session Timeout</div><div style="font-size:12px;color:#64748b">Auto logout after inactivity</div></div>
+            <select class="inp" style="width:140px;font-size:13px"><option>30 minutes</option><option>1 hour</option><option>4 hours</option><option>Never</option></select>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div><label style="font-size:12px;color:#94a3b8;display:block;margin-bottom:6px">Change Password</label>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <input type="password" class="inp" placeholder="Current password"/>
+              <input type="password" class="inp" placeholder="New password"/>
+              <input type="password" class="inp" placeholder="Confirm new password"/>
+              <button class="btn-primary" onclick="showToast('Password updated successfully','success')" style="width:fit-content"><i class="fa fa-lock"></i> Update Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    backup:`
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:20px">Data Backup & Recovery</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="padding:16px;border-radius:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2)"><div style="font-size:13px;font-weight:600;color:#34d399;margin-bottom:4px">✓ Last backup: 2 hours ago</div><div style="font-size:12px;color:#64748b">All data is secure and up-to-date</div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;color:#e2e8f0">Auto Backup</div><div style="font-size:12px;color:#64748b">Automatically backup every 6 hours</div></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" onclick="showToast('Backup started...','info');setTimeout(()=>showToast('Backup complete!','success'),2000)" style="flex:1;justify-content:center"><i class="fa fa-database"></i> Backup Now</button>
+              <button class="btn-secondary" onclick="showToast('Recovery point created','success')" style="flex:1;justify-content:center"><i class="fa fa-rotate-left"></i> Restore</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:24px">
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0;margin-bottom:16px">Export Data</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            ${['Timetable (CSV)','Student Data (Excel)','Faculty Records (PDF)','Attendance Logs (CSV)','Exam Schedule (PDF)','AI Reports (JSON)'].map(e=>`
+              <button class="btn-secondary" onclick="showToast('Exporting ${e}...','info')" style="justify-content:flex-start;font-size:12px"><i class="fa fa-download" style="color:#6366f1"></i>${e}</button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `
+  };
+  document.getElementById('settings-content').innerHTML=content[tab]||'';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODAL SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+
+function showModal(content,title='',width='520px'){
+  const existing=document.getElementById('global-modal');
+  if(existing) existing.remove();
+  
+  const el=document.createElement('div');
+  el.id='global-modal';
+  el.className='modal-overlay';
+  el.innerHTML=`
+    <div class="modal-box glass" style="width:min(${width},95vw);border-radius:20px;padding:28px;position:relative;max-height:90vh;overflow-y:auto">
+      ${title?`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#f1f5f9">${title}</h3><button onclick="closeModal()" style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.06);border:none;color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fa fa-xmark"></i></button></div>`:''}
+      ${content}
+    </div>
+  `;
+  el.addEventListener('click',e=>{if(e.target===el)closeModal()});
+  document.getElementById('modals').appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('active'));
+}
+
+function closeModal(){
+  const el=document.getElementById('global-modal');
+  if(el){el.classList.remove('active');setTimeout(()=>el.remove(),300);}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LIVE SIMULATION
+// ═══════════════════════════════════════════════════════════════════
+
+// Simulate live activity
+setInterval(()=>{
+  if(currentPage==='dashboard'){
+    const msgs=[
+      'Attendance auto-marked via QR — Room 101A',
+      'AI detected and resolved a scheduling conflict',
+      'New student session started — CS Lab 2',
+      'Faculty check-in: Prof. Sharma — Room 202',
+      'Timetable sync completed across all departments',
+    ];
+    const feed=document.getElementById('activity-feed');
+    if(feed){
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:flex-start;gap:10px;animation:fadeIn .4s ease';
+      div.innerHTML=`<div style="width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><i class="fa fa-circle-dot" style="color:#6366f1;font-size:11px"></i></div><div style="flex:1;min-width:0"><div style="font-size:12px;color:#94a3b8;line-height:1.4">${pick(msgs)}</div><div style="font-size:10px;color:#3f4960;margin-top:2px">just now</div></div>`;
+      feed.prepend(div);
+      if(feed.children.length>10) feed.lastChild.remove();
+    }
+  }
+},8000);
+
+// ═══════════════════════════════════════════════════════════════════
+// STARTUP
+// ═══════════════════════════════════════════════════════════════════
+
+// Auto-init app display
+window.addEventListener('load',()=>{
+  // Hide app initially
+  document.getElementById('app').style.display='none';
+  // Date display
+  document.getElementById('current-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+});
+
+// Responsive adjustments
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>768){
+    document.getElementById('sidebar').classList.remove('open');
+  }
+});
+
+</script>
+</body>
+</html>
