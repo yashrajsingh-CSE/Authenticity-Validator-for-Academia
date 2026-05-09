@@ -42,48 +42,48 @@ Built for universities, by researchers — AVA combines cutting-edge NLP, statis
   <tr>
     <td align="center" width="50%">
       <strong>🔐 Login & Authentication</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/login.png" alt="Login Page" width="100%" style="border-radius:12px"/>
+      <img src="login.png" alt="Login Page" width="100%" style="border-radius:12px"/>
       <br/><em>Institutional SSO · Google · Microsoft · GitHub</em>
     </td>
     <td align="center" width="50%">
       <strong>📊 Main Dashboard</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/dashboard.png" alt="Dashboard" width="100%" style="border-radius:12px"/>
+      <img src="dashboard.png" alt="Dashboard" width="100%" style="border-radius:12px"/>
       <br/><em>Real-time stats · Live submission feed</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
       <strong>🤖 AI Content Detection</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/aidetect.png" alt="AI Detection" width="100%" style="border-radius:12px"/>
+      <img src="aidetect.png" alt="AI Detection" width="100%" style="border-radius:12px"/>
       <br/><em>Sentence-level heatmaps · GPT/Claude/Gemini fingerprinting</em>
     </td>
     <td align="center" width="50%">
       <strong>📋 Authenticity Reports</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/reports.png" alt="Reports" width="100%" style="border-radius:12px"/>
+      <img src="reports.png" alt="Reports" width="100%" style="border-radius:12px"/>
       <br/><em>Full PDF export · Committee escalation workflow</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
       <strong>📎 Citation Validator</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/citations.png" alt="Citations" width="100%" style="border-radius:12px"/>
+      <img src="citations.png" alt="Citations" width="100%" style="border-radius:12px"/>
       <br/><em>APA · MLA · IEEE · Chicago · DOI verification</em>
     </td>
     <td align="center" width="50%">
       <strong>🔬 Research Integrity</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/research.png" alt="Research" width="100%" style="border-radius:12px"/>
+      <img src="research.png" alt="Research" width="100%" style="border-radius:12px"/>
       <br/><em>p-hacking detection · Duplicate publication · Image forensics</em>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
       <strong>📈 Analytics</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/analytics.png" alt="Analytics" width="100%" style="border-radius:12px"/>
+      <img src="analytics.png" alt="Analytics" width="100%" style="border-radius:12px"/>
       <br/><em>Faculty alerts · Department trends · Risk courses</em>
     </td>
     <td align="center" width="50%">
       <strong>🏛️ Institution Dashboard</strong><br/><br/>
-      <img src="https://raw.githubusercontent.com/yourusername/ava/main/screenshots/institution.png" alt="Institution" width="100%" style="border-radius:12px"/>
+      <img src="institution.png" alt="Institution" width="100%" style="border-radius:12px"/>
       <br/><em>University leaderboard · Department performance</em>
     </td>
   </tr>
